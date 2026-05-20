@@ -1,0 +1,16 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.chroma/
+chroma/
+.idea/
+.vscode/
+*.log
+.DS_Store
+demo/screenshots/.cache/
+eval/results/
+*.egg-info/
+dist/
+build/

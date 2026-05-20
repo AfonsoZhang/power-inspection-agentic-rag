@@ -1,0 +1,22 @@
+# LLM 客户端（Anthropic 协议）
+anthropic>=0.30.0
+
+# 本地 Embedding
+sentence-transformers>=3.0.0
+
+# 向量检索
+chromadb>=0.5.0
+
+# 配置
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# 数据处理
+pydantic>=2.5.0
+
+# 前端
+streamlit>=1.36.0
+
+# 工具
+tqdm>=4.66.0
+tenacity>=8.2.0

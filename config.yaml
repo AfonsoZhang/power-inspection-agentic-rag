@@ -1,0 +1,44 @@
+app:
+  name: 无人机巡检多模态 RAG 报告生成系统
+  version: 1.0.0
+
+provider:
+  base_url: https://token-plan-sgp.xiaomimimo.com/anthropic
+  embedding_model: BAAI/bge-small-zh-v1.5
+  embedding_dim: 512
+  llm_model: mimo-v2.5-pro
+  vlm_model: mimo-v2.5
+  request_timeout: 120
+  max_retries: 3
+
+vector_store:
+  provider: chroma
+  persist_dir: ./.chroma
+  regulations_collection: regulations
+  cases_collection: defect_cases
+
+retrieval:
+  text_top_k: 8
+  case_top_k: 5
+  rerank_top_k: 4
+  fusion_method: rrf
+  rrf_k: 60
+
+generation:
+  diagnosis_temperature: 0.2
+  report_temperature: 0.3
+  max_tokens: 2048
+
+paths:
+  regulations_dir: ./data/regulations
+  defect_cases: ./data/defects_history/cases.jsonl
+  asset_registry: ./data/assets/asset_registry.json
+  inspection_history: ./data/assets/inspection_history.jsonl
+  sample_images: ./demo/screenshots/sample_defects
+
+ingestion:
+  chunk_size: 500
+  chunk_overlap: 80
+
+logging:
+  level: INFO
