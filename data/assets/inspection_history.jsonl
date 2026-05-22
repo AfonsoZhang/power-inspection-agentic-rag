@@ -1,0 +1,15 @@
+{"inspection_id": "INS-2024-001", "asset_id": "JN-110-052", "date": "2024-09-12", "inspector": "刘明", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "全部正常"}
+{"inspection_id": "INS-2024-002", "asset_id": "JN-110-052", "date": "2024-11-08", "inspector": "刘明", "method": "登塔检查", "weather": "多云", "findings": ["C0003"], "summary": "发现节点 N12 螺栓松动"}
+{"inspection_id": "INS-2025-001", "asset_id": "JN-110-052", "date": "2025-04-22", "inspector": "刘明", "method": "无人机精细化巡视", "weather": "阴", "findings": ["C0002", "C0012"], "summary": "复合绝缘子伞裙撕裂 + 鸟巢"}
+{"inspection_id": "INS-2025-008", "asset_id": "JN-110-052", "date": "2025-09-20", "inspector": "周凯", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "前期处置闭环复查正常"}
+{"inspection_id": "INS-2024-015", "asset_id": "JN-110-067", "date": "2024-12-02", "inspector": "刘明", "method": "登塔检查", "weather": "晴", "findings": [], "summary": "全部正常"}
+{"inspection_id": "INS-2025-002", "asset_id": "JN-110-067", "date": "2025-02-15", "inspector": "周凯", "method": "无人机精细化巡视", "weather": "晴", "findings": ["C0005"], "summary": "防振锤滑移，纳入年度检修"}
+{"inspection_id": "INS-2025-009", "asset_id": "JN-110-067", "date": "2025-05-08", "inspector": "刘明", "method": "登塔检查", "weather": "多云", "findings": ["C0006"], "summary": "杆塔基础下沉 35mm"}
+{"inspection_id": "INS-2025-003", "asset_id": "JN-220-018", "date": "2025-03-12", "inspector": "周凯", "method": "无人机精细化巡视", "weather": "雾", "findings": ["C0001"], "summary": "B 相单片绝缘子自爆"}
+{"inspection_id": "INS-2025-014", "asset_id": "JN-220-018", "date": "2025-06-30", "inspector": "周凯", "method": "无人机绕飞", "weather": "晴", "findings": ["C0004"], "summary": "C 相导线散股，I 级缺陷"}
+{"inspection_id": "INS-2024-022", "asset_id": "QD-110-077", "date": "2024-10-18", "inspector": "陈宇", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "全部正常"}
+{"inspection_id": "INS-2025-005", "asset_id": "QD-110-077", "date": "2025-03-05", "inspector": "陈宇", "method": "雷雨季前特巡", "weather": "晴", "findings": ["C0010"], "summary": "接地引下线锈蚀"}
+{"inspection_id": "INS-2024-018", "asset_id": "QD-110-103", "date": "2024-08-19", "inspector": "陈宇", "method": "运维人员目视", "weather": "雷雨后", "findings": ["C0007"], "summary": "雷击导致整串绝缘子自爆"}
+{"inspection_id": "INS-2025-010", "asset_id": "QD-110-103", "date": "2025-01-10", "inspector": "陈宇", "method": "登塔检查", "weather": "晴", "findings": ["C0009"], "summary": "镀锌层大面积剥落"}
+{"inspection_id": "INS-2025-016", "asset_id": "QD-220-205", "date": "2025-07-21", "inspector": "陈宇", "method": "红外测温", "weather": "晴", "findings": ["C0008"], "summary": "B 相导线接头温度异常"}
+{"inspection_id": "INS-2025-022", "asset_id": "QD-220-205", "date": "2025-09-15", "inspector": "陈宇", "method": "无人机精细化巡视", "weather": "多云", "findings": ["C0011"], "summary": "C 相均压环倾斜"}
