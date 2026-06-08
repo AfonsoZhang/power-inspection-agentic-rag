@@ -228,17 +228,31 @@ def tab_langgraph_qa():
         "导线断股截面积达到多少属于 I 级缺陷？处置时效是多久？",
         "对比一下绝缘子自爆和伞裙撕裂的处置流程有什么不同？",
     ]
-    selected = st.selectbox("示例问题", ["自定义输入"] + sample_qs, key="lg_qa_select")
-    if selected == "自定义输入":
-        question = st.text_area("输入问题", height=80, key="lg_qa_input")
-    else:
-        question = st.text_area("输入问题", value=selected, height=80, key="lg_qa_input")
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        selected = st.selectbox("示例问题", ["自定义输入"] + sample_qs, key="lg_qa_select")
+        if selected == "自定义输入":
+            question = st.text_area("输入问题", height=80, key="lg_qa_input")
+        else:
+            question = st.text_area("输入问题", value=selected, height=80, key="lg_qa_input")
+        uploaded = st.file_uploader(
+            "上传巡检图像（可选）", type=["jpg", "jpeg", "png", "webp"], key="lg_qa_img")
+    with col2:
+        st.metric("图编排节点", "5 个")
+        st.caption("router / agent / tools\ngrade / reflect")
+        if uploaded:
+            st.image(uploaded, caption="已上传图像", use_container_width=True)
+
+    img_path = None
+    if uploaded:
+        img_path = str(_save_upload(uploaded))
+        st.caption(":frame_with_picture: 检测到图像，将切换多模态模型（VLM）看图 + 图编排检索。")
 
     if st.button("LangGraph 推理", type="primary", disabled=not question.strip(), key="lg_qa_btn"):
         with st.spinner("LangGraph 编排执行中..."):
             t0 = time.time()
             try:
-                result = run_graph_agent(question.strip())
+                result = run_graph_agent(question.strip(), image_path=img_path)
             except Exception as e:
                 st.error(f"LangGraph 执行失败: {e}")
                 return

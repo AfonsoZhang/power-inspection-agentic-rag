@@ -134,7 +134,7 @@ streamlit run app/streamlit_app.py --server.headless true
 |---|---|
 | 智能问答（Agent） | Agentic RAG 问答（手写 ReAct 循环），可上传图像，展示完整推理链 |
 | 缺陷诊断（Agent） | 上传巡检图像，Agent 自动看图 + 检索 + 诊断 |
-| LangGraph Agent | LangGraph 纠错式编排（router 路由 + grade 质检 + reflect 反思重试），附图结构可视化 |
+| LangGraph Agent | LangGraph 纠错式编排（router 路由 + grade 质检 + reflect 反思重试），支持上传图像，附图结构可视化 |
 | 巡检报告 | 基于诊断结果生成结构化报告草稿 |
 | 基础 RAG 对比 | 传统 RAG 流程，对比 Agent 模式效果 |
 | 系统信息 | 配置状态 / 数据规模 / 工具列表 |
