@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT))
 import streamlit as st
 
 from src.agent.agent import run_agent
+from src.agent.graph import run_graph_agent
 from src.config import load_config
 from src.generation.report_generator import (
     answer_question,
@@ -179,6 +180,49 @@ def tab_agent_diagnose():
             st.markdown(result.answer)
 
 
+def tab_langgraph_qa():
+    st.header("LangGraph Agent")
+    st.caption("与「智能问答」相同的工具与回答能力，但用 LangGraph StateGraph 编排："
+               "agent 节点 ↔ tools 节点，由条件边决定是否继续调工具。")
+
+    with st.expander(":spider_web: 查看编排图结构（Mermaid）", expanded=False):
+        try:
+            from src.agent.graph import _graph
+            st.code(_graph().get_graph().draw_mermaid(), language="mermaid")
+        except Exception as e:  # 版本差异时降级，不影响问答
+            st.caption(f"图结构渲染不可用：{e}")
+            st.text("entry → agent ──(需调工具)→ tools → agent\n"
+                    "             └──(无 tool_use / 到上限)→ END")
+
+    sample_qs = [
+        "复合绝缘子伞裙撕裂 4cm 应该如何处置？",
+        "JN-110-052 这个杆塔有什么历史问题？帮我查一下档案和巡检记录。",
+        "导线断股截面积达到多少属于 I 级缺陷？处置时效是多久？",
+        "对比一下绝缘子自爆和伞裙撕裂的处置流程有什么不同？",
+    ]
+    selected = st.selectbox("示例问题", ["自定义输入"] + sample_qs, key="lg_qa_select")
+    if selected == "自定义输入":
+        question = st.text_area("输入问题", height=80, key="lg_qa_input")
+    else:
+        question = st.text_area("输入问题", value=selected, height=80, key="lg_qa_input")
+
+    if st.button("LangGraph 推理", type="primary", disabled=not question.strip(), key="lg_qa_btn"):
+        with st.spinner("LangGraph 编排执行中..."):
+            t0 = time.time()
+            try:
+                result = run_graph_agent(question.strip())
+            except Exception as e:
+                st.error(f"LangGraph 执行失败: {e}")
+                return
+            cost = time.time() - t0
+
+        st.success(f"完成，共 {result.total_turns} 轮推理，耗时 {cost:.1f}s")
+        st.subheader("Agent 执行过程")
+        _render_agent_steps(result.steps)
+        st.subheader("最终回答")
+        st.markdown(result.answer)
+
+
 def tab_report():
     st.header("巡检报告生成")
     st.caption("基于本会话累计的诊断结果，自动生成结构化报告草稿。")
@@ -273,16 +317,21 @@ def main():
     st.title("无人机巡检 Agentic RAG 系统")
     st.caption("v2.0 | Agent 自主推理 + 多工具协同 + 引用溯源")
 
-    tabs = st.tabs(["智能问答（Agent）", "缺陷诊断（Agent）", "巡检报告", "基础RAG对比", "系统信息"])
+    tabs = st.tabs([
+        "智能问答（Agent）", "缺陷诊断（Agent）", "LangGraph Agent",
+        "巡检报告", "基础RAG对比", "系统信息",
+    ])
     with tabs[0]:
         tab_agent_qa()
     with tabs[1]:
         tab_agent_diagnose()
     with tabs[2]:
-        tab_report()
+        tab_langgraph_qa()
     with tabs[3]:
-        tab_basic_qa()
+        tab_report()
     with tabs[4]:
+        tab_basic_qa()
+    with tabs[5]:
         tab_system()
 
 
