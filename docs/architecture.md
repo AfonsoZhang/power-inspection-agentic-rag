@@ -15,10 +15,11 @@
 |                  Agent Layer (src/agent/)                 |
 |                                                          |
 |  +--------------------------------------------------+   |
-|  | 编排（二选一，同一套工具/同一回答能力）：           |   |
+|  | 编排（两种实现，同一套工具）：                      |   |
 |  |  a) agent.py  手写 ReAct Loop (最多 8 轮)          |   |
-|  |  b) graph.py  LangGraph StateGraph                 |   |
-|  | LLM 自主决策 → tool_use → 执行 → 结果反馈          |   |
+|  |  b) graph.py  LangGraph：router → ReAct →          |   |
+|  |               grade → (不足) reflect → ReAct       |   |
+|  | LLM 自主决策 → tool_use → 执行 → 质检 → 反思重试   |   |
 |  +--------------------------------------------------+   |
 |  | 工具: search_regulations | search_cases            |   |
 |  |       lookup_asset      | lookup_asset_history     |   |
@@ -79,24 +80,35 @@
 ### 2.6 为什么编排层引入 LangGraph（与手写循环并存）
 
 `agent.py` 的手写 `for turn in range(MAX_TURNS)` 循环已经能跑，但控制流是隐式的——
-"何时继续调工具、何时收尾"散落在循环体的 if 分支里。`graph.py` 用 LangGraph `StateGraph`
-把同一套逻辑显式建模成图：
+"何时继续调工具、何时收尾"散落在循环体的 if 分支里，且加新阶段就得改循环骨架。
+`graph.py` 用 LangGraph `StateGraph` 把控制流显式建模成图，并借此加入手写循环里没有的
+**入口路由** 与 **质检-反思重试**：
 
 ```text
-entry → [agent] ──(最近一条 assistant 含 tool_use 且未到上限)──→ [tools] ──┐
-            │                                                              │
-            └──(无 tool_use / 到 MAX_TURNS)──→ END                         └─→ 回到 [agent]
+start → [router] → [agent] ──(含 tool_use)──→ [tools] ──┐
+                      │                                  │
+                      │ (无 tool_use / 到上限)            └─→ 回到 [agent]
+                      ▼
+                   [grade] ──(充分 / 反思达上限)──→ END
+                      │
+                      └──(不足)──→ [reflect] ──→ 回到 [agent]
 ```
 
-- **状态显式**：`AgentState`（messages / steps / turn）+ reducer（`operator.add`）把"追加消息、
-  累计思考链"的语义写进类型，而非藏在循环变量里。
-- **控制流即数据**：分支判断收敛到一个 `_should_continue` 条件边，便于审查与单测。
-- **演进友好**：呼应 PRD_v2 的迭代方向——后续要加 router / 检索打分 / 反思重试等节点时，
-  只是往图里加节点与边，不必重写循环骨架。
-- **能力对齐刻意保守**：本期是"忠实改写"，graph 版与 agent 版工具、提示词、参数完全一致，
-  `run_graph_agent` 与 `run_agent` 同签名同返回，前端可一键对比，降低引入风险。
+- **router（规则路由，零成本）**：复用 `src/router/intent_router` 识别意图，给 agent 的 system
+  注入"优先调哪些工具"的提示。规则判断不额外调模型。
+- **grade（LLM-as-Judge 质检）**：复用 `llm_client.chat`（`max_tokens=2048`，符合 MiMo 推理模型规则）
+  判断回答是否"基于检索资料且充分"，输出 SUFFICIENT / INSUFFICIENT + 理由。
+- **reflect（反思重试）**：质检不足时把批评意见注入对话、回到 agent 重检索，最多 `MAX_REFLECTIONS=2`
+  次；与 agent 的 `MAX_TURNS` 共同保证终止。到达 `MAX_TURNS` 时 agent 不再带工具定义，强制产出
+  文本答案，确保进入 grade 的状态无悬空 tool_use（协议合法）。
+- **状态显式**：`AgentState`（messages / steps / turn / reflections / grade_*）+ reducer
+  （`operator.add`）把"追加消息、累计思考链"写进类型，而非藏在循环变量里。
+- **控制流即数据**：两个决策点收敛为两个条件边（`_should_continue` / `_after_grade`），便于审查与单测；
+  这也正是 LangGraph 相对手写循环的核心价值——分支与循环是图的一等公民。
+- **演进友好**：呼应 PRD_v2——后续再加"检索打分过滤、混合召回切换"等阶段，只是往图里加节点与边。
 - **不绑死框架**：节点内直接调原生 Anthropic 客户端，不用 `langchain-anthropic` /
   `create_react_agent`，规避 MiMo 推理模型 ThinkingBlock 与 `bind_tools` 的兼容问题。
+- **代价**：grade + 最多 2 次反思会显著增加耗时与调用次数，故作为可选编排与手写 ReAct 并存、按需取用。
 
 ### 2.3 为什么用 RRF 而不是分数加权
 

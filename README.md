@@ -11,7 +11,7 @@
 | **Agentic RAG** | LLM 通过 tool use 自主编排 4 个检索工具（规程/案例/资产/历史），而非固定 retrieve→generate |
 | **多模态诊断** | 上传绝缘子等巡检图像，VLM 看图 + Agent 检索规程案例 → 自动诊断 |
 | **ReAct 推理链** | 最多 8 轮 Agent 循环，前端完整展示思考→工具调用→结果→回答过程 |
-| **双编排实现** | 同一套工具，提供手写 ReAct 循环与 LangGraph StateGraph 两种编排实现，可对比 |
+| **双编排实现** | 同一套工具，提供手写 ReAct 循环与 LangGraph StateGraph（router 路由 + grade 质检 + reflect 反思重试）两种编排，可对比 |
 | **本地 Embedding** | sentence-transformers（BAAI/bge-small-zh-v1.5），无需额外 API |
 | **基础 RAG 对比** | 内置传统 RAG Tab，可直观对比 Agentic RAG 的优势 |
 
@@ -70,7 +70,7 @@ drone-inspection-rag/
 ├── src/
 │   ├── agent/
 │   │   ├── agent.py             # ReAct Agent 核心循环（手写）
-│   │   ├── graph.py             # 同一逻辑的 LangGraph StateGraph 编排
+│   │   ├── graph.py             # LangGraph StateGraph：router→ReAct→grade→reflect 纠错式编排
 │   │   └── tools.py             # 4 个工具定义 + 执行分发
 │   ├── config.py                # 配置加载
 │   ├── ingestion/               # 文档解析 + 切片
@@ -134,7 +134,7 @@ streamlit run app/streamlit_app.py --server.headless true
 |---|---|
 | 智能问答（Agent） | Agentic RAG 问答（手写 ReAct 循环），可上传图像，展示完整推理链 |
 | 缺陷诊断（Agent） | 上传巡检图像，Agent 自动看图 + 检索 + 诊断 |
-| LangGraph Agent | 同一套工具的 LangGraph StateGraph 编排版，附图结构可视化 |
+| LangGraph Agent | LangGraph 纠错式编排（router 路由 + grade 质检 + reflect 反思重试），附图结构可视化 |
 | 巡检报告 | 基于诊断结果生成结构化报告草稿 |
 | 基础 RAG 对比 | 传统 RAG 流程，对比 Agent 模式效果 |
 | 系统信息 | 配置状态 / 数据规模 / 工具列表 |
