@@ -104,9 +104,18 @@ def _llm_node(state: AgentState) -> dict:
     """调模型一轮。到达 MAX_TURNS 后不再带工具，强制产出文本答案（保证 grade 状态干净）。"""
     use_tools = state["turn"] < MAX_TURNS
 
+    system = _system_prompt(state)
+    if not use_tools:
+        # 到达轮次上限：撤掉工具定义强制收尾。必须明确告知模型，否则它可能把工具调用
+        # 当成纯文本输出（如 <tool_call><function=...>），污染最终回答。
+        system += (
+            "\n\n[重要] 你已无法再调用任何工具。请直接基于上文已检索到的资料，"
+            "用中文给出最终的结构化回答；严禁输出任何工具调用语法（如 <tool_call> / <function=...>）。"
+        )
+
     kwargs: dict = dict(
         model=state["model"],
-        system=_system_prompt(state),
+        system=system,
         messages=state["messages"],
         max_tokens=4096,
         temperature=0.2,
