@@ -85,17 +85,20 @@
 **入口路由** 与 **质检-反思重试**：
 
 ```text
-start → [router] → [agent] ──(含 tool_use)──→ [tools] ──┐
-                      │                                  │
-                      │ (无 tool_use / 到上限)            └─→ 回到 [agent]
-                      ▼
-                   [grade] ──(充分 / 反思达上限)──→ END
-                      │
-                      └──(不足)──→ [reflect] ──→ 回到 [agent]
+         ┌─(资产历史查询)─→ [direct_lookup] ─┐
+start →[router]                              ├→ [agent] ─(含 tool_use)─→ [tools] ─┐
+         └─(规程 / 通用)─────────────────────┘     │                              │
+                                                   │ (无 tool_use / 到上限)        └→ 回到 [agent]
+                                                   ▼
+                                                [grade] ─(充分 / 反思达上限)─→ END
+                                                   │
+                                                   └─(不足)─→ [reflect] → 回到 [agent]
 ```
 
-- **router（规则路由，零成本）**：复用 `src/router/intent_router` 识别意图，给 agent 的 system
-  注入"优先调哪些工具"的提示。规则判断不额外调模型。
+- **router（真条件分支，规则分流）**：复用 `src/router/intent_router` 识别意图。**含资产编号的历史/
+  档案查询**所需工具是确定的，直接走 `direct_lookup` 快路径；其余走 ReAct `agent`。规则判断不调模型。
+- **direct_lookup（确定性快路径）**：直接调 `lookup_asset` + `lookup_asset_history`（无 LLM 选工具的
+  来回），结果注入 system 供 agent 综述——省掉 2 个工具选择轮次，更快更稳。
 - **grade（LLM-as-Judge 质检）**：复用 `llm_client.chat`（`max_tokens=2048`，符合 MiMo 推理模型规则），
   按 `prompts.FAITHFULNESS_RUBRIC` 给忠实度打 1-5 分，低于 `FAITHFULNESS_PASS_THRESHOLD`（=4）判为不足。
   **该 rubric 与离线 `eval/ragas_eval` 的 Faithfulness 维度是同一把尺**——在线门控（二元代理）与离线

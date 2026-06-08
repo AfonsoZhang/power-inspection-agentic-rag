@@ -187,25 +187,28 @@ def tab_agent_diagnose():
 
 
 def tab_langgraph_qa():
-    st.header("LangGraph Agent（路由 + 质检反思）")
-    st.caption("用 LangGraph StateGraph 编排的纠错式 RAG：router 入口路由 → ReAct 检索 → "
-               "grade 质检 →（不足则）reflect 反思重试。比手写 ReAct 循环多了路由与自我纠错。")
+    st.header("LangGraph Agent（路由分流 + 质检反思）")
+    st.caption("用 LangGraph StateGraph 编排的纠错式 RAG：router 按意图分流（含资产编号的历史查询走"
+               "确定性快路径，其余走 ReAct）→ grade 质检 →（不足则）reflect 反思重试。")
 
-    st.info("本 Tab 的回答由 **LangGraph `StateGraph`** 编排（`src/agent/graph.py`），相比"
-            "「智能问答（Agent）」的手写 ReAct 循环，多了 **router / grade / reflect** 三个节点；"
-            "质检不足会自动重检索（最多 2 次），故耗时通常更长。")
+    st.info("本 Tab 的回答由 **LangGraph `StateGraph`** 编排（`src/agent/graph.py`）。router 是**真条件分支**："
+            "资产历史查询直接确定性预取档案+历史（跳过 LLM 选工具的来回），其余走 ReAct；"
+            "答案再经 grade 质检，不足则 reflect 重检索（最多 2 次）。")
 
     _GRAPH_DOT = """digraph G {
         rankdir=LR; bgcolor="transparent"; node [fontname="sans-serif"];
         start [shape=circle,label="",width=0.25,style=filled,fillcolor="#bfb6fc"];
-        router [shape=box,style="rounded,filled",fillcolor="#e8f0ff",label="router\\n意图路由"];
+        router [shape=diamond,style=filled,fillcolor="#e8f0ff",label="router\\n意图分流"];
+        direct [shape=box,style="rounded,filled",fillcolor="#e8ffe8",label="direct_lookup\\n确定性快路径\\n(直查档案+历史)"];
         agent [shape=box,style="rounded,filled",fillcolor="#f2f0ff",label="agent\\n调 MiMo + 工具"];
         tools [shape=box,style="rounded,filled",fillcolor="#f2f0ff",label="tools\\n执行检索"];
         grade [shape=box,style="rounded,filled",fillcolor="#fff0e8",label="grade\\nLLM 质检"];
         reflect [shape=box,style="rounded,filled",fillcolor="#ffe8f0",label="reflect\\n反思重试"];
         end [shape=doublecircle,label="END",style=filled,fillcolor="#bfb6fc"];
         start -> router;
-        router -> agent;
+        router -> direct [label="资产历史查询",style=dashed];
+        router -> agent [label="规程 / 通用",style=dashed];
+        direct -> agent;
         agent -> tools [label="含 tool_use",style=dashed];
         tools -> agent;
         agent -> grade [label="无 tool_use",style=dashed];
@@ -213,7 +216,7 @@ def tab_langgraph_qa():
         grade -> reflect [label="不足",style=dashed];
         reflect -> agent;
     }"""
-    with st.expander(":spider_web: LangGraph 编排图（router + 条件边 + 反思循环）", expanded=True):
+    with st.expander(":spider_web: LangGraph 编排图（router 分流 + 快路径 + 反思循环）", expanded=True):
         st.graphviz_chart(_GRAPH_DOT, use_container_width=True)
         try:
             from src.agent.graph import _graph
@@ -238,8 +241,8 @@ def tab_langgraph_qa():
         uploaded = st.file_uploader(
             "上传巡检图像（可选）", type=["jpg", "jpeg", "png", "webp"], key="lg_qa_img")
     with col2:
-        st.metric("图编排节点", "5 个")
-        st.caption("router / agent / tools\ngrade / reflect")
+        st.metric("图编排节点", "6 个")
+        st.caption("router / direct_lookup\nagent / tools\ngrade / reflect")
         if uploaded:
             st.image(uploaded, caption="已上传图像", use_container_width=True)
 

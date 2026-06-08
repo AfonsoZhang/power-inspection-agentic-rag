@@ -67,7 +67,10 @@ class AgentState(TypedDict):
     client: object                                    # 复用的 Anthropic 客户端
     model: str                                        # 文本或多模态模型名
     question: str                                     # 原始问题（供 router / grade 使用）
+    route: str                                         # router 的分支决策："direct" | "agent"
+    asset_id: str                                     # router 抽取的资产编号（快路径用）
     system_hint: str                                  # router 给 agent 注入的路由提示
+    prefetched_context: str                           # 确定性快路径预取的档案/历史，注入 system
     messages: Annotated[list, operator.add]           # Anthropic messages 数组
     steps: Annotated[list[AgentStep], operator.add]   # 思考链（供前端展示）
     turn: int                                         # 已完成的 agent 轮次
@@ -78,29 +81,69 @@ class AgentState(TypedDict):
 
 
 def _router_node(state: AgentState) -> dict:
-    """入口路由：规则识别意图，给 agent 注入工具偏好提示（复用 intent_router）。"""
+    """入口路由：决定走"确定性快路径"还是"ReAct 智能体路径"。
+
+    含资产编号的历史/档案查询 → direct：所需工具是确定的（lookup_asset + history），
+    无需让 LLM 多轮试探选工具，直接确定性预取，省下选工具的来回。
+    其余（规程/通用）→ agent：需要语义检索 + 自主编排，走 ReAct。
+    """
     q = state["question"]
     intent = detect_intent(q)
     asset_id = extract_asset_id(q)
 
-    if intent == "ask_history":
-        target = f"资产 {asset_id} " if asset_id else ""
-        hint = f"用户在询问{target}的历史情况，优先调用 lookup_asset 与 lookup_asset_history。"
-        label = f"意图=历史查询{('（'+asset_id+'）') if asset_id else ''}"
-    elif intent == "ask_regulation":
+    if intent == "ask_history" and asset_id:
+        label = f"意图=历史查询（{asset_id}）→ 确定性快路径（直接预取档案+历史，跳过选工具）"
+        step = AgentStep(step_type="router", content=label)
+        return {"route": "direct", "asset_id": asset_id, "steps": [step]}
+
+    if intent == "ask_regulation":
         hint = "用户在询问规程/标准/处置要求，优先调用 search_regulations，必要时再 search_cases。"
-        label = "意图=规程查询"
+        label = "意图=规程查询 → ReAct 智能体路径"
     else:
         hint = "先判断需要规程条款还是历史案例，再选择合适的工具检索。"
-        label = "意图=通用问答"
+        label = "意图=通用问答 → ReAct 智能体路径"
 
-    step = AgentStep(step_type="router", content=f"{label} → {hint}")
-    return {"system_hint": hint, "steps": [step]}
+    step = AgentStep(step_type="router", content=f"{label}；{hint}")
+    return {"route": "agent", "asset_id": asset_id or "", "system_hint": hint, "steps": [step]}
+
+
+def _route_decide(state: AgentState) -> str:
+    """router 的条件边：按 route 决策导向不同节点。"""
+    return "direct_lookup" if state["route"] == "direct" else "agent"
+
+
+def _direct_lookup_node(state: AgentState) -> dict:
+    """确定性快路径：直接调资产档案+历史两个工具（无 LLM 选工具），结果注入 system 供 agent 综述。"""
+    aid = state["asset_id"]
+    card = execute_tool("lookup_asset", {"asset_id": aid})
+    history = execute_tool("lookup_asset_history", {"asset_id": aid, "limit": 5})
+
+    steps = [
+        AgentStep(step_type="tool_call", content=f"（快路径）确定性调用 lookup_asset",
+                  tool_name="lookup_asset", tool_input={"asset_id": aid}),
+        AgentStep(step_type="tool_result",
+                  content=card[:300] + "..." if len(card) > 300 else card, tool_name="lookup_asset"),
+        AgentStep(step_type="tool_call", content=f"（快路径）确定性调用 lookup_asset_history",
+                  tool_name="lookup_asset_history", tool_input={"asset_id": aid, "limit": 5}),
+        AgentStep(step_type="tool_result",
+                  content=history[:300] + "..." if len(history) > 300 else history,
+                  tool_name="lookup_asset_history"),
+    ]
+    prefetched = f"## 资产 {aid} 档案\n{card}\n\n## 资产 {aid} 巡检历史\n{history}"
+    hint = (f"资产 {aid} 的档案与历史已在系统提示中预取给出，"
+            "无需再调用 lookup_asset / lookup_asset_history；如需规程/案例再调相应工具。")
+    return {"prefetched_context": prefetched, "system_hint": hint, "steps": steps}
 
 
 def _system_prompt(state: AgentState) -> str:
+    parts = [AGENT_SYSTEM]
     hint = state.get("system_hint", "")
-    return AGENT_SYSTEM + (f"\n\n[路由提示] {hint}" if hint else "")
+    if hint:
+        parts.append(f"[路由提示] {hint}")
+    pre = state.get("prefetched_context", "")
+    if pre:
+        parts.append(f"[已预取资料]\n{pre}")
+    return "\n\n".join(parts)
 
 
 def _llm_node(state: AgentState) -> dict:
@@ -268,13 +311,16 @@ def _reflect_node(state: AgentState) -> dict:
 def _build_graph():
     g = StateGraph(AgentState)
     g.add_node("router", _router_node)
+    g.add_node("direct_lookup", _direct_lookup_node)
     g.add_node("agent", _llm_node)
     g.add_node("tools", _tools_node)
     g.add_node("grade", _grade_node)
     g.add_node("reflect", _reflect_node)
 
     g.set_entry_point("router")
-    g.add_edge("router", "agent")
+    g.add_conditional_edges("router", _route_decide,
+                            {"direct_lookup": "direct_lookup", "agent": "agent"})
+    g.add_edge("direct_lookup", "agent")
     g.add_conditional_edges("agent", _should_continue, {"tools": "tools", "grade": "grade"})
     g.add_edge("tools", "agent")
     g.add_conditional_edges("grade", _after_grade, {"reflect": "reflect", END: END})
@@ -330,7 +376,10 @@ def run_graph_agent(question: str, image_path: str | None = None) -> AgentResult
         "client": client,
         "model": model,
         "question": question,
+        "route": "agent",
+        "asset_id": "",
         "system_hint": "",
+        "prefetched_context": "",
         "messages": [{"role": "user", "content": _build_user_content(question, image_path)}],
         "steps": [],
         "turn": 0,
