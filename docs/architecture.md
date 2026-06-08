@@ -5,9 +5,9 @@
 ```text
                     +------------------+
                     | Streamlit 前端    |
-                    | 5 Tab: Agent问答  |
-                    | /Agent诊断/报告  |
-                    | /基础RAG/系统信息 |
+                    | 6 Tab: Agent问答  |
+                    | /Agent诊断/LangGraph|
+                    | /报告/基础RAG/信息 |
                     +--------+---------+
                              |
                              v
@@ -15,7 +15,9 @@
 |                  Agent Layer (src/agent/)                 |
 |                                                          |
 |  +--------------------------------------------------+   |
-|  | ReAct Agent Loop (最多 8 轮)                       |   |
+|  | 编排（二选一，同一套工具/同一回答能力）：           |   |
+|  |  a) agent.py  手写 ReAct Loop (最多 8 轮)          |   |
+|  |  b) graph.py  LangGraph StateGraph                 |   |
 |  | LLM 自主决策 → tool_use → 执行 → 结果反馈          |   |
 |  +--------------------------------------------------+   |
 |  | 工具: search_regulations | search_cases            |   |
@@ -67,11 +69,34 @@
 - Embedding 使用本地 sentence-transformers（BAAI/bge-small-zh-v1.5），无需额外 API
 - 协议标准化，切换模型服务商只需改 config.yaml
 
-### 2.2 为什么不引入 LangChain / LlamaIndex
+### 2.2 为什么不引入 LangChain / LlamaIndex 的检索抽象
 
-- 直接用原生 Anthropic SDK + Chroma，代码透明、好讲解
-- Agent 工具调用直接基于 Anthropic tool use 协议实现，无需框架封装
+- 检索与生成直接用原生 Anthropic SDK + Chroma，代码透明、好讲解
+- Agent 工具调用直接基于 Anthropic tool use 协议实现，无需框架封装其 RAG 管线
 - 整体代码量可控，便于理解 Agentic RAG 的底层原理
+- 注：编排层另行引入了 LangGraph（见 2.6），但仅用其图编排能力，模型调用仍走原生 SDK
+
+### 2.6 为什么编排层引入 LangGraph（与手写循环并存）
+
+`agent.py` 的手写 `for turn in range(MAX_TURNS)` 循环已经能跑，但控制流是隐式的——
+"何时继续调工具、何时收尾"散落在循环体的 if 分支里。`graph.py` 用 LangGraph `StateGraph`
+把同一套逻辑显式建模成图：
+
+```text
+entry → [agent] ──(最近一条 assistant 含 tool_use 且未到上限)──→ [tools] ──┐
+            │                                                              │
+            └──(无 tool_use / 到 MAX_TURNS)──→ END                         └─→ 回到 [agent]
+```
+
+- **状态显式**：`AgentState`（messages / steps / turn）+ reducer（`operator.add`）把"追加消息、
+  累计思考链"的语义写进类型，而非藏在循环变量里。
+- **控制流即数据**：分支判断收敛到一个 `_should_continue` 条件边，便于审查与单测。
+- **演进友好**：呼应 PRD_v2 的迭代方向——后续要加 router / 检索打分 / 反思重试等节点时，
+  只是往图里加节点与边，不必重写循环骨架。
+- **能力对齐刻意保守**：本期是"忠实改写"，graph 版与 agent 版工具、提示词、参数完全一致，
+  `run_graph_agent` 与 `run_agent` 同签名同返回，前端可一键对比，降低引入风险。
+- **不绑死框架**：节点内直接调原生 Anthropic 客户端，不用 `langchain-anthropic` /
+  `create_react_agent`，规避 MiMo 推理模型 ThinkingBlock 与 `bind_tools` 的兼容问题。
 
 ### 2.3 为什么用 RRF 而不是分数加权
 
