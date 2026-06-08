@@ -24,19 +24,16 @@ sys.path.insert(0, str(ROOT))
 
 from src.agent.agent import run_agent  # noqa: E402
 from src.generation.llm_client import chat  # noqa: E402
+from src.generation.prompts import FAITHFULNESS_RUBRIC  # noqa: E402
 from src.generation.report_generator import answer_question  # noqa: E402
 
 GOLDEN_PATH = ROOT / "eval" / "golden_qa.jsonl"
 RESULTS_DIR = ROOT / "eval" / "results"
 
+# 忠实度判据复用 src/generation/prompts.py 的共享 rubric，与在线 grade 节点同尺
 FAITHFULNESS_PROMPT = """你是一个严格的 RAG 系统评测专家。请判断以下【回答】是否忠实于【检索上下文】。
 
-评分标准（1-5 分）：
-5 = 回答完全基于上下文，无任何编造
-4 = 回答基本基于上下文，有极少量合理推断
-3 = 回答部分基于上下文，部分内容无法溯源
-2 = 回答大量内容无法从上下文中找到依据
-1 = 回答与上下文无关或严重编造
+""" + FAITHFULNESS_RUBRIC + """
 
 【问题】
 {question}

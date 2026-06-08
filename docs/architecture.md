@@ -96,8 +96,10 @@ start → [router] → [agent] ──(含 tool_use)──→ [tools] ──┐
 
 - **router（规则路由，零成本）**：复用 `src/router/intent_router` 识别意图，给 agent 的 system
   注入"优先调哪些工具"的提示。规则判断不额外调模型。
-- **grade（LLM-as-Judge 质检）**：复用 `llm_client.chat`（`max_tokens=2048`，符合 MiMo 推理模型规则）
-  判断回答是否"基于检索资料且充分"，输出 SUFFICIENT / INSUFFICIENT + 理由。
+- **grade（LLM-as-Judge 质检）**：复用 `llm_client.chat`（`max_tokens=2048`，符合 MiMo 推理模型规则），
+  按 `prompts.FAITHFULNESS_RUBRIC` 给忠实度打 1-5 分，低于 `FAITHFULNESS_PASS_THRESHOLD`（=4）判为不足。
+  **该 rubric 与离线 `eval/ragas_eval` 的 Faithfulness 维度是同一把尺**——在线门控（二元代理）与离线
+  指标（聚合真值）口径统一，改判据只改 `prompts.py` 一处。
 - **reflect（反思重试）**：质检不足时把批评意见注入对话、回到 agent 重检索，最多 `MAX_REFLECTIONS=2`
   次；与 agent 的 `MAX_TURNS` 共同保证终止。到达 `MAX_TURNS` 时 agent 不再带工具定义，强制产出
   文本答案，确保进入 grade 的状态无悬空 tool_use（协议合法）。
