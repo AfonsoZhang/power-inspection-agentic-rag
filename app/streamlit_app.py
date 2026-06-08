@@ -68,7 +68,13 @@ def _save_upload(file) -> Path:
 def _render_agent_steps(steps):
     """渲染 Agent 思考链"""
     for step in steps:
-        if step.step_type == "thinking":
+        if step.step_type == "router":
+            st.markdown(f"> :compass: **路由:** {step.content}")
+        elif step.step_type == "grade":
+            st.markdown(f"> :test_tube: **质检:** {step.content}")
+        elif step.step_type == "reflect":
+            st.markdown(f"> :recycle: **反思重试:** {step.content}")
+        elif step.step_type == "thinking":
             st.markdown(f"> :brain: **Agent 思考:** {step.content[:200]}")
         elif step.step_type == "tool_call":
             icon = TOOL_ICONS.get(step.tool_name, ":gear:")
@@ -181,18 +187,40 @@ def tab_agent_diagnose():
 
 
 def tab_langgraph_qa():
-    st.header("LangGraph Agent")
-    st.caption("与「智能问答」相同的工具与回答能力，但用 LangGraph StateGraph 编排："
-               "agent 节点 ↔ tools 节点，由条件边决定是否继续调工具。")
+    st.header("LangGraph Agent（路由 + 质检反思）")
+    st.caption("用 LangGraph StateGraph 编排的纠错式 RAG：router 入口路由 → ReAct 检索 → "
+               "grade 质检 →（不足则）reflect 反思重试。比手写 ReAct 循环多了路由与自我纠错。")
 
-    with st.expander(":spider_web: 查看编排图结构（Mermaid）", expanded=False):
+    st.info("本 Tab 的回答由 **LangGraph `StateGraph`** 编排（`src/agent/graph.py`），相比"
+            "「智能问答（Agent）」的手写 ReAct 循环，多了 **router / grade / reflect** 三个节点；"
+            "质检不足会自动重检索（最多 2 次），故耗时通常更长。")
+
+    _GRAPH_DOT = """digraph G {
+        rankdir=LR; bgcolor="transparent"; node [fontname="sans-serif"];
+        start [shape=circle,label="",width=0.25,style=filled,fillcolor="#bfb6fc"];
+        router [shape=box,style="rounded,filled",fillcolor="#e8f0ff",label="router\\n意图路由"];
+        agent [shape=box,style="rounded,filled",fillcolor="#f2f0ff",label="agent\\n调 MiMo + 工具"];
+        tools [shape=box,style="rounded,filled",fillcolor="#f2f0ff",label="tools\\n执行检索"];
+        grade [shape=box,style="rounded,filled",fillcolor="#fff0e8",label="grade\\nLLM 质检"];
+        reflect [shape=box,style="rounded,filled",fillcolor="#ffe8f0",label="reflect\\n反思重试"];
+        end [shape=doublecircle,label="END",style=filled,fillcolor="#bfb6fc"];
+        start -> router;
+        router -> agent;
+        agent -> tools [label="含 tool_use",style=dashed];
+        tools -> agent;
+        agent -> grade [label="无 tool_use",style=dashed];
+        grade -> end [label="充分 / 达上限",style=dashed];
+        grade -> reflect [label="不足",style=dashed];
+        reflect -> agent;
+    }"""
+    with st.expander(":spider_web: LangGraph 编排图（router + 条件边 + 反思循环）", expanded=True):
+        st.graphviz_chart(_GRAPH_DOT, use_container_width=True)
         try:
             from src.agent.graph import _graph
-            st.code(_graph().get_graph().draw_mermaid(), language="mermaid")
+            st.caption("以下为 LangGraph 由编译后的图导出的 Mermaid 源（证明上图来自 StateGraph 本身）：")
+            st.code(_graph().get_graph().draw_mermaid(), language="text")
         except Exception as e:  # 版本差异时降级，不影响问答
-            st.caption(f"图结构渲染不可用：{e}")
-            st.text("entry → agent ──(需调工具)→ tools → agent\n"
-                    "             └──(无 tool_use / 到上限)→ END")
+            st.caption(f"Mermaid 源导出不可用：{e}")
 
     sample_qs = [
         "复合绝缘子伞裙撕裂 4cm 应该如何处置？",
