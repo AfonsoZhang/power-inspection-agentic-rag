@@ -3,40 +3,53 @@
 相比 agent.py 的手写 ReAct 循环，这里用 LangGraph StateGraph 把控制流显式建模，
 并加入两个手写循环里没有的能力——入口路由 与 质检-反思重试：
 
-    start → [router] → [agent] ──(assistant 含 tool_use)──→ [tools] ──┐
-                          │                                            │
-                          │ (无 tool_use / 到轮次上限)                  └─→ 回到 [agent]
-                          ▼
-                       [grade] ──(充分 / 反思已达上限)──→ END
-                          │
-                          └──(不足)──→ [reflect] ──→ 回到 [agent]
+    start → [router] ─┬─(确定性场景)→ [direct_lookup] ─┐
+                      │                                 ├→ [agent] ⇄ [tools]
+                      └─(需自主编排)───────────────────┘        │
+                                                                 ▼
+                                                              [grade] ──(通过/反思用尽)→ END
+                                                                 │
+                                                                 └─(不足)→ [reflect] → [agent]
 
-- router：规则识别意图（复用 src/router/intent_router），给 agent 注入「优先调哪些工具」的提示，
-  不额外调模型，零成本。
-- agent ↔ tools：与 agent.py 等价的 ReAct 内循环。到达 MAX_TURNS 后，agent 不再带工具定义，
+- router：规则识别意图（复用 src/router/intent_router），零模型调用。命中"资产历史/档案"
+  与"起飞前合规校验"这类**所需工具确定**的场景时，直接预取，省掉 LLM 试探选工具的来回。
+- agent ↔ tools：与 agent.py 等价的 ReAct 内循环。到达 max_turns 后 agent 不再带工具定义，
   强制产出文本答案，保证进入 grade 时状态干净（无悬空 tool_use）。
-- grade：LLM-as-Judge 质检答案是否「基于检索资料且充分」（复用 llm_client.chat，max_tokens=2048）。
-- reflect：质检不足时注入批评意见、回到 agent 重检索，最多 MAX_REFLECTIONS 次。
+- grade：LLM-as-Judge 按共享 rubric 质检答案忠实度。
+- reflect：质检不足时注入批评意见、回到 agent 重检索，最多 max_reflections 次。
 
-模型调用全部走原生 Anthropic 客户端 / 现有 chat 封装，不引入 langchain-anthropic /
-create_react_agent，规避 MiMo 推理模型 ThinkingBlock 与 bind_tools 的兼容问题。
+模型调用统一走 generation/llm_client 的 provider 中立封装，图里不出现任何一家 SDK 的对象。
 """
 from __future__ import annotations
 
 import json
 import operator
+from datetime import date
 from typing import Annotated, TypedDict
 
 from langgraph.graph import END, StateGraph
 
-from ..config import get_api_key, load_config
-from ..generation.llm_client import chat
+from ..config import load_config
+from ..generation.llm_client import chat, complete
+from ..generation.llm_types import assistant_message, user_message
 from ..generation.prompts import FAITHFULNESS_PASS_THRESHOLD, FAITHFULNESS_RUBRIC
-from ..router.intent_router import detect_intent, extract_asset_id
-from .agent import AGENT_SYSTEM, MAX_TURNS, AgentResult, AgentStep
+from ..router.intent_router import (
+    detect_intent,
+    extract_asset_id,
+    extract_asset_ids,
+    extract_line_name,
+)
+from .agent import (
+    AGENT_SYSTEM,
+    FINAL_TURN_INSTRUCTION,
+    AgentResult,
+    AgentStep,
+    max_turns,
+    run_tool_calls,
+    thinking_steps,
+    truncate,
+)
 from .tools import TOOL_DEFINITIONS, execute_tool
-
-MAX_REFLECTIONS = 2
 
 # 质检判据复用 prompts.FAITHFULNESS_RUBRIC，与离线 eval/ragas_eval 的 Faithfulness 维度同尺；
 # 评委按同一 1-5 标准打分，再由 FAITHFULNESS_PASS_THRESHOLD 映射为"通过/反思"的二元门。
@@ -64,180 +77,160 @@ class AgentState(TypedDict):
     messages / steps 用 operator.add 作为 reducer：节点只返回"新增量"，由 LangGraph 累加。
     """
 
-    client: object                                    # 复用的 Anthropic 客户端
-    model: str                                        # 文本或多模态模型名
-    question: str                                     # 原始问题（供 router / grade 使用）
-    route: str                                         # router 的分支决策："direct" | "agent"
-    asset_id: str                                     # router 抽取的资产编号（快路径用）
+    model_is_multimodal: bool
+    question: str
+    route: str                                        # "direct" | "agent"
     system_hint: str                                  # router 给 agent 注入的路由提示
-    prefetched_context: str                           # 确定性快路径预取的档案/历史，注入 system
-    messages: Annotated[list, operator.add]           # Anthropic messages 数组
+    prefetched_context: str                           # 确定性快路径预取的资料，注入 system
+    prefetch_calls: list                              # router 定下、由 direct_lookup 执行的工具调用
+    messages: Annotated[list, operator.add]           # 中立消息数组
     steps: Annotated[list[AgentStep], operator.add]   # 思考链（供前端展示）
     turn: int                                         # 已完成的 agent 轮次
     reflections: int                                  # 已发生的反思重试次数
-    answer: str                                       # 最终回答
+    pending_tool_calls: list                          # 最近一轮待执行的工具调用
+    answer: str
     grade_verdict: str                                # "sufficient" | "insufficient"
-    grade_reason: str                                 # 质检理由
+    grade_reason: str
 
+
+# ---------------------------------------------------------------------------
+# router：规则分流
+# ---------------------------------------------------------------------------
 
 def _router_node(state: AgentState) -> dict:
-    """入口路由：决定走"确定性快路径"还是"ReAct 智能体路径"。
-
-    含资产编号的历史/档案查询 → direct：所需工具是确定的（lookup_asset + history），
-    无需让 LLM 多轮试探选工具，直接确定性预取，省下选工具的来回。
-    其余（规程/通用）→ agent：需要语义检索 + 自主编排，走 ReAct。
-    """
     q = state["question"]
     intent = detect_intent(q)
-    asset_id = extract_asset_id(q)
 
-    if intent == "ask_history" and asset_id:
-        label = f"意图=历史查询（{asset_id}）→ 确定性快路径（直接预取档案+历史，跳过选工具）"
-        step = AgentStep(step_type="router", content=label)
-        return {"route": "direct", "asset_id": asset_id, "steps": [step]}
+    prefetch = _plan_prefetch(q, intent)
+    if prefetch:
+        label, hint, calls = prefetch
+        return {
+            "route": "direct",
+            "system_hint": hint,
+            "prefetch_calls": calls,
+            "steps": [AgentStep(step_type="router", content=label)],
+        }
 
-    if intent == "ask_regulation":
-        hint = "用户在询问规程/标准/处置要求，优先调用 search_regulations，必要时再 search_cases。"
-        label = "意图=规程查询 → ReAct 智能体路径"
-    else:
-        hint = "先判断需要规程条款还是历史案例，再选择合适的工具检索。"
-        label = "意图=通用问答 → ReAct 智能体路径"
+    hints = {
+        "ask_regulation": "用户在询问规程/标准/处置要求，优先调用 search_regulations，必要时再 search_cases。",
+        "plan_mission": "用户在问巡检/复飞排期，优先调用 plan_inspection_mission，再按需补充规程依据。",
+    }
+    hint = hints.get(intent, "先判断需要规程条款、历史案例还是作业计算，再选择合适的工具。")
+    label = f"意图={intent} → ReAct 智能体路径；{hint}"
+    return {"route": "agent", "system_hint": hint, "steps": [AgentStep(step_type="router", content=label)]}
 
-    step = AgentStep(step_type="router", content=f"{label}；{hint}")
-    return {"route": "agent", "asset_id": asset_id or "", "system_hint": hint, "steps": [step]}
+
+def _plan_prefetch(question: str, intent: str) -> tuple[str, str, list[tuple[str, dict]]] | None:
+    """判断能否走确定性快路径，返回 (展示标签, 给 agent 的提示, 待确定性执行的工具调用)。"""
+    if intent == "ask_history":
+        aid = extract_asset_id(question)
+        if aid:
+            return (
+                f"意图=历史查询（{aid}）→ 确定性快路径（直接预取档案+历史，跳过选工具）",
+                f"资产 {aid} 的档案与历史已在系统提示中预取给出，无需再调用 lookup_asset / "
+                "lookup_asset_history；如需规程/案例再调相应工具。",
+                [("lookup_asset", {"asset_id": aid}),
+                 ("lookup_asset_history", {"asset_id": aid, "limit": 5})],
+            )
+
+    if intent == "flight_clearance":
+        ids = extract_asset_ids(question)
+        if ids:
+            return (
+                f"意图=飞行前合规校验（{len(ids)} 基塔位）→ 确定性快路径（直接校验空域/气象/安全距离）",
+                "合规校验结果已在系统提示中给出，无需再调用 check_flight_clearance；"
+                "请据此向用户说明结论与处置建议。",
+                [("check_flight_clearance", {"asset_ids": ids})],
+            )
+
+    if intent == "plan_mission":
+        line = extract_line_name(question)
+        if line:
+            return (
+                f"意图=任务规划（{line}）→ 确定性快路径（直接生成架次计划）",
+                "任务计划已在系统提示中给出，无需再调用 plan_inspection_mission；"
+                "请据此向用户解释排期依据。",
+                [("plan_inspection_mission", {"line_name": line,
+                                              "reference_date": date.today().isoformat()})],
+            )
+    return None
 
 
 def _route_decide(state: AgentState) -> str:
-    """router 的条件边：按 route 决策导向不同节点。"""
     return "direct_lookup" if state["route"] == "direct" else "agent"
 
 
 def _direct_lookup_node(state: AgentState) -> dict:
-    """确定性快路径：直接调资产档案+历史两个工具（无 LLM 选工具），结果注入 system 供 agent 综述。"""
-    aid = state["asset_id"]
-    card = execute_tool("lookup_asset", {"asset_id": aid})
-    history = execute_tool("lookup_asset_history", {"asset_id": aid, "limit": 5})
-
-    steps = [
-        AgentStep(step_type="tool_call", content=f"（快路径）确定性调用 lookup_asset",
-                  tool_name="lookup_asset", tool_input={"asset_id": aid}),
-        AgentStep(step_type="tool_result",
-                  content=card[:300] + "..." if len(card) > 300 else card, tool_name="lookup_asset"),
-        AgentStep(step_type="tool_call", content=f"（快路径）确定性调用 lookup_asset_history",
-                  tool_name="lookup_asset_history", tool_input={"asset_id": aid, "limit": 5}),
-        AgentStep(step_type="tool_result",
-                  content=history[:300] + "..." if len(history) > 300 else history,
-                  tool_name="lookup_asset_history"),
-    ]
-    prefetched = f"## 资产 {aid} 档案\n{card}\n\n## 资产 {aid} 巡检历史\n{history}"
-    hint = (f"资产 {aid} 的档案与历史已在系统提示中预取给出，"
-            "无需再调用 lookup_asset / lookup_asset_history；如需规程/案例再调相应工具。")
-    return {"prefetched_context": prefetched, "system_hint": hint, "steps": steps}
+    """确定性快路径：不经 LLM 选工具，直接执行 router 定下的工具调用，结果注入 system。"""
+    calls = state.get("prefetch_calls") or []
+    steps: list[AgentStep] = []
+    blocks: list[str] = []
+    for name, args in calls:
+        steps.append(AgentStep(step_type="tool_call", content=f"（快路径）确定性调用 {name}",
+                               tool_name=name, tool_input=args))
+        result = execute_tool(name, args)
+        steps.append(AgentStep(step_type="tool_result", content=truncate(result), tool_name=name))
+        blocks.append(f"## {name} 结果\n{result}")
+    return {"prefetched_context": "\n\n".join(blocks), "steps": steps}
 
 
-def _system_prompt(state: AgentState) -> str:
+# ---------------------------------------------------------------------------
+# agent ⇄ tools
+# ---------------------------------------------------------------------------
+
+def _system_prompt(state: AgentState, *, final_turn: bool) -> str:
     parts = [AGENT_SYSTEM]
-    hint = state.get("system_hint", "")
-    if hint:
-        parts.append(f"[路由提示] {hint}")
-    pre = state.get("prefetched_context", "")
-    if pre:
-        parts.append(f"[已预取资料]\n{pre}")
-    return "\n\n".join(parts)
+    if state.get("system_hint"):
+        parts.append(f"[路由提示] {state['system_hint']}")
+    if state.get("prefetched_context"):
+        parts.append(f"[已预取资料]\n{state['prefetched_context']}")
+    prompt = "\n\n".join(parts)
+    return prompt + FINAL_TURN_INSTRUCTION if final_turn else prompt
 
 
 def _llm_node(state: AgentState) -> dict:
-    """调模型一轮。到达 MAX_TURNS 后不再带工具，强制产出文本答案（保证 grade 状态干净）。"""
-    use_tools = state["turn"] < MAX_TURNS
+    limit = max_turns()
+    use_tools = state["turn"] < limit
 
-    system = _system_prompt(state)
-    if not use_tools:
-        # 到达轮次上限：撤掉工具定义强制收尾。必须明确告知模型，否则它可能把工具调用
-        # 当成纯文本输出（如 <tool_call><function=...>），污染最终回答。
-        system += (
-            "\n\n[重要] 你已无法再调用任何工具。请直接基于上文已检索到的资料，"
-            "用中文给出最终的结构化回答；严禁输出任何工具调用语法（如 <tool_call> / <function=...>）。"
-        )
-
-    kwargs: dict = dict(
-        model=state["model"],
-        system=system,
-        messages=state["messages"],
+    resp = complete(
+        state["messages"],
+        system=_system_prompt(state, final_turn=not use_tools),
+        tools=TOOL_DEFINITIONS if use_tools else None,
+        temperature=load_config()["agent"]["temperature"],
         max_tokens=4096,
-        temperature=0.2,
+        multimodal=state["model_is_multimodal"],
     )
-    if use_tools:
-        kwargs["tools"] = TOOL_DEFINITIONS
-
-    resp = state["client"].messages.create(**kwargs)
-    assistant_content = resp.content
-
-    steps: list[AgentStep] = []
-    for block in assistant_content:
-        if block.type == "thinking":
-            steps.append(AgentStep(step_type="thinking", content=block.thinking[:300]))
-        elif block.type == "text" and block.text.strip():
-            steps.append(AgentStep(step_type="thinking", content=block.text))
 
     out: dict = {
-        "messages": [{"role": "assistant", "content": assistant_content}],
-        "steps": steps,
+        "messages": [assistant_message(resp)],
+        "steps": thinking_steps(resp),
         "turn": state["turn"] + 1,
+        "pending_tool_calls": resp.tool_calls,
     }
-
-    tool_uses = [b for b in assistant_content if b.type == "tool_use"]
-    if not tool_uses:
-        out["answer"] = "".join(b.text for b in assistant_content if b.type == "text")
+    if not resp.has_tool_calls:
+        out["answer"] = resp.text
     return out
 
 
 def _should_continue(state: AgentState) -> str:
-    """agent 之后：还要调工具就去 tools，否则去 grade 质检。"""
-    last = state["messages"][-1]
-    has_tool = any(b.type == "tool_use" for b in last["content"])
-    return "tools" if has_tool else "grade"
+    return "tools" if state["pending_tool_calls"] else "grade"
 
 
 def _tools_node(state: AgentState) -> dict:
-    """执行最近一轮的 tool_use，回填 tool_result。"""
-    last = state["messages"][-1]
-    tool_uses = [b for b in last["content"] if b.type == "tool_use"]
+    class _Resp:  # run_tool_calls 只用到 .tool_calls
+        tool_calls = state["pending_tool_calls"]
 
-    steps: list[AgentStep] = []
-    tool_results = []
-    for tu in tool_uses:
-        steps.append(AgentStep(
-            step_type="tool_call",
-            content=f"调用 {tu.name}",
-            tool_name=tu.name,
-            tool_input=tu.input,
-        ))
+    steps, messages = run_tool_calls(_Resp())
+    return {"messages": messages, "steps": steps, "pending_tool_calls": []}
 
-        result_text = execute_tool(tu.name, tu.input)
 
-        steps.append(AgentStep(
-            step_type="tool_result",
-            content=result_text[:300] + "..." if len(result_text) > 300 else result_text,
-            tool_name=tu.name,
-        ))
-        tool_results.append({
-            "type": "tool_result",
-            "tool_use_id": tu.id,
-            "content": result_text,
-        })
-
-    return {"messages": [{"role": "user", "content": tool_results}], "steps": steps}
-
+# ---------------------------------------------------------------------------
+# grade / reflect
+# ---------------------------------------------------------------------------
 
 def _collect_contexts(messages: list) -> str:
-    """从 messages 里抽出所有 tool_result 文本，作为质检的"检索资料"。"""
-    parts = []
-    for m in messages:
-        if m["role"] == "user" and isinstance(m["content"], list):
-            for blk in m["content"]:
-                if isinstance(blk, dict) and blk.get("type") == "tool_result":
-                    parts.append(str(blk.get("content", "")))
-    return "\n\n".join(parts)
+    """把所有 tool 消息的内容作为质检的"检索资料"。"""
+    return "\n\n".join(m["content"] for m in messages if m["role"] == "tool")
 
 
 def _parse_grade(text: str) -> dict:
@@ -253,9 +246,9 @@ def _parse_grade(text: str) -> dict:
 
 
 def _grade_node(state: AgentState) -> dict:
-    """LLM-as-Judge 质检：按共享 rubric 给忠实度打 1-5 分，低于门槛则触发反思。"""
     answer = state.get("answer", "") or "（未产出最终回答）"
-    contexts = _collect_contexts(state["messages"]) or "（本轮未检索任何资料）"
+    contexts = _collect_contexts(state["messages"]) or state.get("prefetched_context", "")
+    contexts = contexts or "（本轮未检索任何资料）"
 
     verdict_text = chat(
         [
@@ -276,39 +269,44 @@ def _grade_node(state: AgentState) -> dict:
     reason = str(parsed.get("reason", "")).strip() or verdict_text.strip()[:120]
 
     insufficient = score < FAITHFULNESS_PASS_THRESHOLD
-    verdict = "insufficient" if insufficient else "sufficient"
-
     label = "不足，需反思重试" if insufficient else "通过"
     step = AgentStep(
         step_type="grade",
         content=f"忠实度评分 {score}/5（门槛 {FAITHFULNESS_PASS_THRESHOLD}）→ {label}。{reason}",
     )
-    return {"answer": answer, "grade_verdict": verdict, "grade_reason": reason, "steps": [step]}
+    return {
+        "answer": answer,
+        "grade_verdict": "insufficient" if insufficient else "sufficient",
+        "grade_reason": reason,
+        "steps": [step],
+    }
 
 
 def _after_grade(state: AgentState) -> str:
-    """grade 之后：不足且仍有重试额度则 reflect，否则结束。"""
-    if state["grade_verdict"] == "insufficient" and state["reflections"] < MAX_REFLECTIONS:
+    limit = int(load_config()["agent"]["max_reflections"])
+    if state["grade_verdict"] == "insufficient" and state["reflections"] < limit:
         return "reflect"
     return END
 
 
 def _reflect_node(state: AgentState) -> dict:
-    """反思：把质检意见作为反馈注入对话，回到 agent 重检索。"""
     n = state["reflections"] + 1
     feedback = (
         f"质检判定上一轮回答【不足】：{state['grade_reason']}。"
         "请据此重新检索（更换关键词或调用其它工具补充资料）后，给出更完整、有据的回答。"
     )
-    step = AgentStep(step_type="reflect", content=f"第 {n} 次反思重试：{state['grade_reason']}")
     return {
-        "messages": [{"role": "user", "content": feedback}],
+        "messages": [user_message(feedback)],
         "reflections": n,
-        "steps": [step],
+        "steps": [AgentStep(step_type="reflect", content=f"第 {n} 次反思重试：{state['grade_reason']}")],
     }
 
 
-def _build_graph():
+# ---------------------------------------------------------------------------
+# 图装配
+# ---------------------------------------------------------------------------
+
+def build_graph():
     g = StateGraph(AgentState)
     g.add_node("router", _router_node)
     g.add_node("direct_lookup", _direct_lookup_node)
@@ -331,68 +329,34 @@ def _build_graph():
 _GRAPH = None
 
 
-def _graph():
-    """编译一次、复用。可用 `_graph().get_graph().draw_mermaid()` 导出图结构。"""
+def graph():
+    """编译一次、复用。可用 `graph().get_graph().draw_mermaid()` 导出图结构。"""
     global _GRAPH
     if _GRAPH is None:
-        _GRAPH = _build_graph()
+        _GRAPH = build_graph()
     return _GRAPH
-
-
-def _build_user_content(question: str, image_path: str | None):
-    """构造首条 user 消息内容：含图像 base64 分支（等价 agent.py 的图像处理）。"""
-    if not image_path:
-        return question
-
-    import base64
-    from pathlib import Path
-
-    path = Path(image_path)
-    suffix = path.suffix.lower().lstrip(".")
-    media_type = f"image/{'jpeg' if suffix in ('jpg', 'jpeg') else suffix}"
-    data = base64.b64encode(path.read_bytes()).decode()
-    return [
-        {
-            "type": "image",
-            "source": {"type": "base64", "media_type": media_type, "data": data},
-        },
-        {"type": "text", "text": question},
-    ]
 
 
 def run_graph_agent(question: str, image_path: str | None = None) -> AgentResult:
     """LangGraph 版 Agentic RAG（路由 + ReAct + 质检反思），与 agent.run_agent 同签名同返回。"""
-    from anthropic import Anthropic
-
-    cfg = load_config()
-    client = Anthropic(
-        api_key=get_api_key(),
-        base_url=cfg["_env"]["llm_base_url"],
-        timeout=cfg["provider"]["request_timeout"],
-    )
-    model = cfg["provider"]["vlm_model"] if image_path else cfg["provider"]["llm_model"]
-
     init_state: AgentState = {
-        "client": client,
-        "model": model,
+        "model_is_multimodal": bool(image_path),
         "question": question,
         "route": "agent",
-        "asset_id": "",
         "system_hint": "",
         "prefetched_context": "",
-        "messages": [{"role": "user", "content": _build_user_content(question, image_path)}],
+        "prefetch_calls": [],
+        "messages": [user_message(question, image_path=image_path)],
         "steps": [],
         "turn": 0,
         "reflections": 0,
+        "pending_tool_calls": [],
         "answer": "",
         "grade_verdict": "",
         "grade_reason": "",
     }
 
-    final = _graph().invoke(init_state, config={"recursion_limit": 80})
-
-    steps = final["steps"]
+    final = graph().invoke(init_state, config={"recursion_limit": 80})
     answer = final.get("answer", "") or "达到最大推理轮次，请尝试更具体的问题。"
-    steps = steps + [AgentStep(step_type="answer", content=answer)]
-
+    steps = final["steps"] + [AgentStep(step_type="answer", content=answer)]
     return AgentResult(answer=answer, steps=steps, total_turns=final["turn"])
