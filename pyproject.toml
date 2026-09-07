@@ -1,0 +1,29 @@
+[project]
+name = "power-inspection-agentic-rag"
+version = "2.0.0"
+description = "电力（无人机）巡检 Agentic RAG：自主工具编排 + 确定性低空作业规划与合规校验"
+requires-python = ">=3.10"
+readme = "README.md"
+license = { file = "LICENSE" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+exclude = [".chroma", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "C4"]
+ignore = [
+    "E501",   # 行宽由 formatter 控制，中文注释按字符数算会误伤
+    "B008",   # FastAPI/Streamlit 风格的默认参数调用
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]
+"app/*" = ["E402"]       # sys.path 注入必须先于 src 导入
+"scripts/*" = ["E402"]
+"eval/*" = ["E402"]

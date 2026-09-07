@@ -10,7 +10,10 @@ chroma/
 *.log
 .DS_Store
 demo/screenshots/.cache/
-eval/results/
+# eval/results/ 刻意**不**忽略：评测结论要能被别人核对
+eval/results/*.jsonl
 *.egg-info/
 dist/
 build/
+.pytest_cache/
+.ruff_cache/

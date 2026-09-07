@@ -1,0 +1,8 @@
+# CI 只装这一份即可跑通全部单测——检索栈（chromadb / sentence-transformers）
+# 与前端（streamlit）都是懒加载的，测试不碰模型也不联网。
+pyyaml>=6.0
+python-dotenv>=1.0.0
+tenacity>=8.2.0
+langgraph>=0.2.0
+pytest>=8.0.0
+ruff>=0.6.0
