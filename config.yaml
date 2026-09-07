@@ -1,15 +1,52 @@
 app:
-  name: 无人机巡检多模态 RAG 报告生成系统
-  version: 1.0.0
+  name: 无人机巡检 Agentic RAG 系统
+  version: 2.0.0
 
-provider:
-  base_url: https://token-plan-sgp.xiaomimimo.com/anthropic
-  embedding_model: BAAI/bge-small-zh-v1.5
-  embedding_dim: 512
-  llm_model: mimo-v2.5-pro
-  vlm_model: mimo-v2.5
+# ---------------------------------------------------------------------------
+# 文本推理模型（Agent 主干，必须支持 function calling）
+#   provider: deepseek | openai | anthropic
+#     - deepseek / openai 走 OpenAI 兼容协议，任何兼容端点（通义、vLLM、Ollama…）
+#       都用 provider: openai + 自定义 base_url 即可
+#     - anthropic 走 Anthropic Messages 协议
+#   base_url 留空则用该 provider 的默认地址
+#   api_key_env 指定读取哪个环境变量；找不到时回落到 LLM_API_KEY
+# ---------------------------------------------------------------------------
+llm:
+  provider: deepseek
+  model: deepseek-chat
+  base_url: ""
+  api_key_env: DEEPSEEK_API_KEY
   request_timeout: 120
   max_retries: 3
+
+# ---------------------------------------------------------------------------
+# 多模态模型（上传巡检图像时使用）
+# DeepSeek 目前没有视觉模型，所以这一路单独配置；enabled=false 时
+# 前端会隐藏图像上传入口，纯文本问答/规划功能不受影响。
+# 示例（通义千问 VL，OpenAI 兼容）：
+#   enabled: true
+#   provider: openai
+#   model: qwen-vl-max
+#   base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+#   api_key_env: DASHSCOPE_API_KEY
+# ---------------------------------------------------------------------------
+vlm:
+  enabled: false
+  provider: openai
+  model: ""
+  base_url: ""
+  api_key_env: VLM_API_KEY
+  request_timeout: 120
+  max_retries: 3
+
+embedding:
+  model: BAAI/bge-small-zh-v1.5
+  dim: 512
+
+agent:
+  max_turns: 8          # ReAct 内循环最大轮次
+  max_reflections: 2    # LangGraph 质检不通过后的最大反思重试次数
+  temperature: 0.2
 
 vector_store:
   provider: chroma
@@ -18,9 +55,9 @@ vector_store:
   cases_collection: defect_cases
 
 retrieval:
-  text_top_k: 8
+  text_top_k: 6
   case_top_k: 5
-  rerank_top_k: 4
+  rerank_top_k: 6   # RRF 融合后保留条数
   fusion_method: rrf
   rrf_k: 60
 
@@ -29,12 +66,28 @@ generation:
   report_temperature: 0.3
   max_tokens: 2048
 
+# ---------------------------------------------------------------------------
+# 低空作业（无人机巡检任务规划 / 飞行前合规校验）
+# ---------------------------------------------------------------------------
+mission:
+  cruise_speed_mps: 12.0      # 巡航速度 m/s
+  hover_minutes_per_tower: 6.0  # 单基杆塔精细化巡视悬停作业时长
+  battery_minutes: 28.0       # 单块电池有效作业时长（已扣安全余量）
+  max_sorties_per_day: 8      # 单机单日最大架次
+  # 缺陷等级 -> 复飞时效（日历天），口径与规程一致
+  recheck_days_by_severity:
+    I: 1
+    II: 7
+    III: 30
+  routine_interval_days: 90   # 无缺陷杆塔的例行巡检间隔
+
 paths:
   regulations_dir: ./data/regulations
   defect_cases: ./data/defects_history/cases.jsonl
   asset_registry: ./data/assets/asset_registry.json
   inspection_history: ./data/assets/inspection_history.jsonl
-  sample_images: ./demo/screenshots/sample_defects
+  airspace_constraints: ./data/airspace/constraints.json
+  sample_images: ./demo/sample_images
 
 ingestion:
   chunk_size: 500

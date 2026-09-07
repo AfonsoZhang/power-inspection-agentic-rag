@@ -11,13 +11,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import chromadb
-from chromadb.config import Settings
-
 from ..config import load_config
 
 
-def get_client() -> chromadb.api.ClientAPI:
+def get_client():
+    # chromadb 是重依赖，延迟到真正建连时再 import，方便纯逻辑单测免装
+    import chromadb
+    from chromadb.config import Settings
+
     cfg = load_config()
     persist_dir: Path = cfg["_paths"]["chroma_dir"]
     persist_dir.mkdir(parents=True, exist_ok=True)
@@ -85,7 +86,7 @@ def query(collection, embedding: list[float], top_k: int = 5,
     docs = (res.get("documents") or [[]])[0]
     metas = (res.get("metadatas") or [[]])[0]
     dists = (res.get("distances") or [[]])[0]
-    for i, doc, meta, dist in zip(ids, docs, metas, dists):
+    for i, doc, meta, dist in zip(ids, docs, metas, dists, strict=False):
         out.append(
             {
                 "id": i,

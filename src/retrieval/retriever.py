@@ -56,9 +56,15 @@ def retrieve_asset_history(asset_id: str, limit: int = 5) -> list[dict]:
     return history[:limit]
 
 
-def fuse_rrf(result_lists: list[list[dict]], k: int = 60,
-             top_k: int = 6) -> list[dict]:
-    """Reciprocal Rank Fusion: 不同路召回得分量纲不同，按排名融合更稳健"""
+def fuse_rrf(result_lists: list[list[dict]], k: int | None = None,
+             top_k: int | None = None) -> list[dict]:
+    """Reciprocal Rank Fusion: 不同路召回得分量纲不同，按排名融合更稳健。
+
+    k / top_k 缺省时取 config.yaml 的 retrieval.rrf_k / retrieval.rerank_top_k。
+    """
+    cfg = load_config()["retrieval"]
+    k = cfg["rrf_k"] if k is None else k
+    top_k = cfg["rerank_top_k"] if top_k is None else top_k
     score: dict[str, float] = defaultdict(float)
     seen: dict[str, dict] = {}
     for results in result_lists:

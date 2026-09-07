@@ -1,25 +1,25 @@
-# LLM 客户端（Anthropic 协议）
+# --- LLM 客户端 -------------------------------------------------------------
+# 默认走 OpenAI 兼容协议（DeepSeek / 通义 / vLLM / Ollama / OpenAI 本体）
+openai>=1.40.0
+# 仅当 config.yaml 的 llm.provider / vlm.provider 设为 anthropic 时才需要
 anthropic>=0.30.0
 
-# 本地 Embedding
+# --- 本地 Embedding ---------------------------------------------------------
 sentence-transformers>=3.0.0
 
-# 向量检索
+# --- 向量检索 ---------------------------------------------------------------
 chromadb>=0.5.0
 
-# Agent 编排（LangGraph StateGraph，与手写 ReAct 循环并行对比）
+# --- Agent 编排 -------------------------------------------------------------
+# LangGraph StateGraph：纠错式编排（graph.py）与多智能体协作（crew.py）
 langgraph>=0.2.0
 
-# 配置
+# --- 配置 / 工具 ------------------------------------------------------------
 pyyaml>=6.0
 python-dotenv>=1.0.0
-
-# 数据处理
 pydantic>=2.5.0
-
-# 前端
-streamlit>=1.36.0
-
-# 工具
 tqdm>=4.66.0
 tenacity>=8.2.0
+
+# --- 前端 -------------------------------------------------------------------
+streamlit>=1.36.0
