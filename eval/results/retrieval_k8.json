@@ -1,0 +1,178 @@
+{
+  "summary": {
+    "k": 8,
+    "n_questions": 15,
+    "skipped_multimodal": [
+      "V01",
+      "V02",
+      "V03",
+      "V04",
+      "V05"
+    ],
+    "recall_at_k": 0.9111,
+    "mrr": 0.9407,
+    "hit_rate": 1.0,
+    "full_recall_rate": 0.8,
+    "asset_lookup_success": 1.0
+  },
+  "per_sample": [
+    {
+      "qid": "Q01",
+      "n_refs": 1,
+      "n_matched": 1,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q02",
+      "n_refs": 2,
+      "n_matched": 2,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q03",
+      "n_refs": 1,
+      "n_matched": 1,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q04",
+      "n_refs": 1,
+      "n_matched": 1,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q05",
+      "n_refs": 1,
+      "n_matched": 1,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q06",
+      "n_refs": 1,
+      "n_matched": 1,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q07",
+      "n_refs": 1,
+      "n_matched": 1,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q08",
+      "n_refs": 1,
+      "n_matched": 1,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q09",
+      "n_refs": 2,
+      "n_matched": 2,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q10",
+      "n_refs": 1,
+      "n_matched": 1,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q11",
+      "n_refs": 3,
+      "n_matched": 2,
+      "recall": 0.6666666666666666,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [
+        "case::C0002"
+      ],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q12",
+      "n_refs": 2,
+      "n_matched": 2,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q13",
+      "n_refs": 2,
+      "n_matched": 1,
+      "recall": 0.5,
+      "first_hit_rank": 9,
+      "reciprocal_rank": 0.1111111111111111,
+      "missed": [
+        "绝缘子巡视与处置规程::第三章 典型缺陷处置 > 3.3 绝缘子串污秽闪络"
+      ],
+      "asset_lookups": {
+        "QD-110-077": true
+      }
+    },
+    {
+      "qid": "Q14",
+      "n_refs": 2,
+      "n_matched": 1,
+      "recall": 0.5,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [
+        "杆塔本体巡检规范::第三章 处置流程 > 3.2 时效要求"
+      ],
+      "asset_lookups": {}
+    },
+    {
+      "qid": "Q15",
+      "n_refs": 1,
+      "n_matched": 1,
+      "recall": 1.0,
+      "first_hit_rank": 1,
+      "reciprocal_rank": 1.0,
+      "missed": [],
+      "asset_lookups": {}
+    }
+  ]
+}

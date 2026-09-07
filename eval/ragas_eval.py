@@ -3,9 +3,9 @@
 对 golden_qa.jsonl 中的每个问题，分三种模式运行：
 1. Basic RAG（纯文本，固定检索→生成）
 2. Agent RAG（纯文本，LLM 自主调用工具）
-3. Agent RAG + 图像（多模态，仅图像题）
+3. Agent RAG + 图像（多模态，仅图像题；未配置 vlm 时自动跳过）
 
-评委：mimo-v2.5-pro（纯文本打分），三个维度：
+评委：config.yaml 里配置的文本模型（默认 deepseek-chat），三个维度：
 - Faithfulness: 答案是否忠实于检索上下文，无编造
 - Answer Relevancy: 答案是否切题、完整
 - Context Precision: 检索到的上下文是否相关
@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from src.agent.agent import run_agent  # noqa: E402
+from src.config import vlm_available  # noqa: E402
 from src.generation.llm_client import chat  # noqa: E402
 from src.generation.prompts import FAITHFULNESS_RUBRIC  # noqa: E402
 from src.generation.report_generator import answer_question  # noqa: E402
@@ -187,6 +188,10 @@ def collect_and_judge(samples: list[dict]) -> dict:
     text_samples = [s for s in samples if "image_path" not in s]
     image_samples = [s for s in samples if "image_path" in s]
 
+    if image_samples and not vlm_available():
+        print(f"未配置多模态模型，跳过 {len(image_samples)} 条图像题（config.yaml 的 vlm.enabled）")
+        image_samples = []
+
     print(f"\n文本题 {len(text_samples)} 条，图像题 {len(image_samples)} 条\n")
 
     # --- 文本题：Basic RAG + Agent ---
@@ -246,7 +251,9 @@ def compute_summary(items: list[dict]) -> dict:
     if not valid:
         return {"n": 0}
     n = len(valid)
-    avg = lambda key: round(sum(d.get(key, 0) for d in valid) / n, 2)
+    def avg(key: str) -> float:
+        return round(sum(d.get(key, 0) for d in valid) / n, 2)
+
     return {
         "n": n,
         "faithfulness": avg("faithfulness"),
