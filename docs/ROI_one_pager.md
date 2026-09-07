@@ -27,7 +27,7 @@
 
 | 环节 | 单次调用 | 价格估算 |
 |---|---|---|
-| VLM 视觉描述 | mimo-v2.5，约 1,500 token I/O | 约 0.04 元 |
+| VLM 视觉描述 | 通义千问 VL 级别模型，约 1,500 token I/O | 约 0.04 元 |
 | Embedding（每次约 4 次调用） | BGE-M3，约 800 token | 约 0.001 元 |
 | LLM 诊断生成 | DeepSeek-V3，约 3,500 token I/O | 约 0.012 元 |
 | LLM 报告生成 | DeepSeek-V3，约 8,000 token I/O | 约 0.025 元 |
