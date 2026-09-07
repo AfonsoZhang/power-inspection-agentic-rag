@@ -2,14 +2,74 @@
 {"inspection_id": "INS-2024-002", "asset_id": "JN-110-052", "date": "2024-11-08", "inspector": "刘明", "method": "登塔检查", "weather": "多云", "findings": ["C0003"], "summary": "发现节点 N12 螺栓松动"}
 {"inspection_id": "INS-2025-001", "asset_id": "JN-110-052", "date": "2025-04-22", "inspector": "刘明", "method": "无人机精细化巡视", "weather": "阴", "findings": ["C0002", "C0012"], "summary": "复合绝缘子伞裙撕裂 + 鸟巢"}
 {"inspection_id": "INS-2025-008", "asset_id": "JN-110-052", "date": "2025-09-20", "inspector": "周凯", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "前期处置闭环复查正常"}
+{"inspection_id": "INS-2025-032", "asset_id": "JN-110-053", "date": "2025-01-14", "inspector": "刘明", "method": "运维人员目视", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-031", "asset_id": "JN-110-053", "date": "2025-05-06", "inspector": "陈晓东", "method": "运维人员目视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-034", "asset_id": "JN-110-054", "date": "2025-02-16", "inspector": "陈晓东", "method": "运维人员目视", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-033", "asset_id": "JN-110-054", "date": "2025-06-16", "inspector": "赵鹏", "method": "运维人员目视", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-036", "asset_id": "JN-110-055", "date": "2025-04-15", "inspector": "刘明", "method": "运维人员目视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-035", "asset_id": "JN-110-055", "date": "2025-08-20", "inspector": "赵鹏", "method": "运维人员目视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2024-038", "asset_id": "JN-110-056", "date": "2024-11-28", "inspector": "陈晓东", "method": "无人机通道巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-037", "asset_id": "JN-110-056", "date": "2025-03-21", "inspector": "赵鹏", "method": "登塔检查", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-039", "asset_id": "JN-110-057", "date": "2025-05-06", "inspector": "周敏", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2024-041", "asset_id": "JN-110-058", "date": "2024-12-18", "inspector": "赵鹏", "method": "运维人员目视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-040", "asset_id": "JN-110-058", "date": "2025-04-19", "inspector": "赵鹏", "method": "登塔检查", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-042", "asset_id": "JN-110-059", "date": "2025-05-30", "inspector": "赵鹏", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-044", "asset_id": "JN-110-060", "date": "2025-04-15", "inspector": "郭强", "method": "无人机通道巡视", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-043", "asset_id": "JN-110-060", "date": "2025-07-09", "inspector": "陈晓东", "method": "无人机通道巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-045", "asset_id": "JN-110-061", "date": "2025-05-10", "inspector": "郭强", "method": "无人机精细化巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-046", "asset_id": "JN-110-062", "date": "2025-04-24", "inspector": "周敏", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-048", "asset_id": "JN-110-063", "date": "2025-01-29", "inspector": "刘明", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-047", "asset_id": "JN-110-063", "date": "2025-04-29", "inspector": "陈晓东", "method": "无人机精细化巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-050", "asset_id": "JN-110-064", "date": "2025-03-19", "inspector": "刘明", "method": "运维人员目视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-049", "asset_id": "JN-110-064", "date": "2025-06-14", "inspector": "陈晓东", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-051", "asset_id": "JN-110-065", "date": "2025-04-20", "inspector": "陈晓东", "method": "运维人员目视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-052", "asset_id": "JN-110-066", "date": "2025-04-02", "inspector": "陈晓东", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
 {"inspection_id": "INS-2024-015", "asset_id": "JN-110-067", "date": "2024-12-02", "inspector": "刘明", "method": "登塔检查", "weather": "晴", "findings": [], "summary": "全部正常"}
 {"inspection_id": "INS-2025-002", "asset_id": "JN-110-067", "date": "2025-02-15", "inspector": "周凯", "method": "无人机精细化巡视", "weather": "晴", "findings": ["C0005"], "summary": "防振锤滑移，纳入年度检修"}
 {"inspection_id": "INS-2025-009", "asset_id": "JN-110-067", "date": "2025-05-08", "inspector": "刘明", "method": "登塔检查", "weather": "多云", "findings": ["C0006"], "summary": "杆塔基础下沉 35mm"}
 {"inspection_id": "INS-2025-003", "asset_id": "JN-220-018", "date": "2025-03-12", "inspector": "周凯", "method": "无人机精细化巡视", "weather": "雾", "findings": ["C0001"], "summary": "B 相单片绝缘子自爆"}
 {"inspection_id": "INS-2025-014", "asset_id": "JN-220-018", "date": "2025-06-30", "inspector": "周凯", "method": "无人机绕飞", "weather": "晴", "findings": ["C0004"], "summary": "C 相导线散股，I 级缺陷"}
+{"inspection_id": "INS-2025-053", "asset_id": "JN-220-019", "date": "2025-07-22", "inspector": "陈晓东", "method": "无人机精细化巡视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-055", "asset_id": "JN-220-020", "date": "2025-05-03", "inspector": "周敏", "method": "运维人员目视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-054", "asset_id": "JN-220-020", "date": "2025-08-29", "inspector": "陈晓东", "method": "登塔检查", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-057", "asset_id": "JN-220-021", "date": "2025-01-30", "inspector": "郭强", "method": "无人机精细化巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-056", "asset_id": "JN-220-021", "date": "2025-06-04", "inspector": "刘明", "method": "无人机精细化巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-058", "asset_id": "JN-220-022", "date": "2025-05-14", "inspector": "刘明", "method": "运维人员目视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-059", "asset_id": "JN-220-023", "date": "2025-06-26", "inspector": "赵鹏", "method": "无人机精细化巡视", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-060", "asset_id": "JN-220-024", "date": "2025-04-12", "inspector": "赵鹏", "method": "无人机精细化巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-061", "asset_id": "JN-220-025", "date": "2025-08-21", "inspector": "周敏", "method": "运维人员目视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-062", "asset_id": "JN-220-026", "date": "2025-08-18", "inspector": "陈晓东", "method": "无人机通道巡视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-063", "asset_id": "JN-220-027", "date": "2025-06-01", "inspector": "刘明", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
 {"inspection_id": "INS-2024-022", "asset_id": "QD-110-077", "date": "2024-10-18", "inspector": "陈宇", "method": "无人机精细化巡视", "weather": "晴", "findings": [], "summary": "全部正常"}
 {"inspection_id": "INS-2025-005", "asset_id": "QD-110-077", "date": "2025-03-05", "inspector": "陈宇", "method": "雷雨季前特巡", "weather": "晴", "findings": ["C0010"], "summary": "接地引下线锈蚀"}
+{"inspection_id": "INS-2025-064", "asset_id": "QD-110-078", "date": "2025-05-22", "inspector": "周敏", "method": "无人机精细化巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-065", "asset_id": "QD-110-079", "date": "2025-07-23", "inspector": "陈晓东", "method": "无人机精细化巡视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-066", "asset_id": "QD-110-080", "date": "2025-06-19", "inspector": "赵鹏", "method": "运维人员目视", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-067", "asset_id": "QD-110-081", "date": "2025-07-11", "inspector": "赵鹏", "method": "无人机精细化巡视", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-068", "asset_id": "QD-110-082", "date": "2025-08-04", "inspector": "周敏", "method": "无人机精细化巡视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-069", "asset_id": "QD-110-083", "date": "2025-06-15", "inspector": "陈晓东", "method": "运维人员目视", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-070", "asset_id": "QD-110-084", "date": "2025-06-26", "inspector": "周敏", "method": "运维人员目视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-071", "asset_id": "QD-110-085", "date": "2025-03-30", "inspector": "刘明", "method": "无人机精细化巡视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-072", "asset_id": "QD-110-086", "date": "2025-05-21", "inspector": "赵鹏", "method": "无人机精细化巡视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-074", "asset_id": "QD-110-096", "date": "2025-02-07", "inspector": "陈晓东", "method": "无人机通道巡视", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-073", "asset_id": "QD-110-096", "date": "2025-05-05", "inspector": "陈晓东", "method": "无人机通道巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-076", "asset_id": "QD-110-097", "date": "2025-01-14", "inspector": "周敏", "method": "运维人员目视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-075", "asset_id": "QD-110-097", "date": "2025-05-10", "inspector": "周敏", "method": "登塔检查", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-077", "asset_id": "QD-110-098", "date": "2025-05-16", "inspector": "陈晓东", "method": "无人机通道巡视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-079", "asset_id": "QD-110-099", "date": "2025-03-03", "inspector": "刘明", "method": "无人机通道巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-078", "asset_id": "QD-110-099", "date": "2025-06-27", "inspector": "陈晓东", "method": "登塔检查", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-080", "asset_id": "QD-110-100", "date": "2025-06-01", "inspector": "陈晓东", "method": "登塔检查", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-082", "asset_id": "QD-110-101", "date": "2025-02-11", "inspector": "陈晓东", "method": "无人机精细化巡视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-081", "asset_id": "QD-110-101", "date": "2025-05-24", "inspector": "周敏", "method": "运维人员目视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-083", "asset_id": "QD-110-102", "date": "2025-04-02", "inspector": "赵鹏", "method": "运维人员目视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
 {"inspection_id": "INS-2024-018", "asset_id": "QD-110-103", "date": "2024-08-19", "inspector": "陈宇", "method": "运维人员目视", "weather": "雷雨后", "findings": ["C0007"], "summary": "雷击导致整串绝缘子自爆"}
 {"inspection_id": "INS-2025-010", "asset_id": "QD-110-103", "date": "2025-01-10", "inspector": "陈宇", "method": "登塔检查", "weather": "晴", "findings": ["C0009"], "summary": "镀锌层大面积剥落"}
 {"inspection_id": "INS-2025-016", "asset_id": "QD-220-205", "date": "2025-07-21", "inspector": "陈宇", "method": "红外测温", "weather": "晴", "findings": ["C0008"], "summary": "B 相导线接头温度异常"}
 {"inspection_id": "INS-2025-022", "asset_id": "QD-220-205", "date": "2025-09-15", "inspector": "陈宇", "method": "无人机精细化巡视", "weather": "多云", "findings": ["C0011"], "summary": "C 相均压环倾斜"}
+{"inspection_id": "INS-2025-084", "asset_id": "QD-220-206", "date": "2025-05-12", "inspector": "赵鹏", "method": "登塔检查", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-085", "asset_id": "QD-220-207", "date": "2025-08-06", "inspector": "周敏", "method": "无人机通道巡视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-086", "asset_id": "QD-220-208", "date": "2025-06-06", "inspector": "赵鹏", "method": "登塔检查", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-087", "asset_id": "QD-220-209", "date": "2025-08-22", "inspector": "周敏", "method": "无人机精细化巡视", "weather": "阴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-088", "asset_id": "QD-220-210", "date": "2025-05-05", "inspector": "郭强", "method": "运维人员目视", "weather": "晴", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-089", "asset_id": "QD-220-211", "date": "2025-06-15", "inspector": "赵鹏", "method": "无人机精细化巡视", "weather": "多云", "findings": [], "summary": "通道及本体检查未见异常"}
+{"inspection_id": "INS-2025-090", "asset_id": "QD-220-212", "date": "2025-08-04", "inspector": "周敏", "method": "运维人员目视", "weather": "小雨转晴", "findings": [], "summary": "通道及本体检查未见异常"}

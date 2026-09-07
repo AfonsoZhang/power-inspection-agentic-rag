@@ -4,7 +4,11 @@
     "line_name": "济南西郊 110kV 输电线路",
     "asset_type": "110kV角钢塔",
     "model": "ZBC-110-21",
-    "location": {"lat": 36.6502, "lon": 116.9123, "address": "济南市槐荫区西部"},
+    "location": {
+      "lat": 36.6502,
+      "lon": 116.9123,
+      "address": "济南市槐荫区西部"
+    },
     "commission_year": 2015,
     "manager": "李建国",
     "manager_phone": "138-xxxx-1001",
@@ -15,11 +19,281 @@
     "remarks": "位于市区边缘，雷电活动较为频繁"
   },
   {
+    "asset_id": "JN-110-053",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.6509,
+      "lon": 116.9137,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2021,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 2,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "跨越乡道，塔下有农业机械通行"
+  },
+  {
+    "asset_id": "JN-110-054",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.6516,
+      "lon": 116.9155,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2022,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "位于市区边缘，雷电活动较为频繁"
+  },
+  {
+    "asset_id": "JN-110-055",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.6525,
+      "lon": 116.9167,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2012,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 2,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "塔基周边有养殖大棚，需注意飞行安全距离"
+  },
+  {
+    "asset_id": "JN-110-056",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.6533,
+      "lon": 116.9188,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2013,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "塔位处于风口，导线舞动历史记录较多"
+  },
+  {
+    "asset_id": "JN-110-057",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.6544,
+      "lon": 116.92,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2014,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 2,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "沿海高盐雾环境，金具锈蚀风险高"
+  },
+  {
+    "asset_id": "JN-110-058",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.6551,
+      "lon": 116.9219,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2015,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "靠近黄河滩区，地基沉降需重点关注"
+  },
+  {
+    "asset_id": "JN-110-059",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.6556,
+      "lon": 116.9234,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2016,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 2,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": ""
+  },
+  {
+    "asset_id": "JN-110-060",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.657,
+      "lon": 116.9253,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2017,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "山地塔位，人工登塔难度大，优先无人机巡视"
+  },
+  {
+    "asset_id": "JN-110-061",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.6582,
+      "lon": 116.9285,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2018,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 2,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "邻近高速公路，作业需协调交通管制"
+  },
+  {
+    "asset_id": "JN-110-062",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.6602,
+      "lon": 116.9309,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2019,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "跨越乡道，塔下有农业机械通行"
+  },
+  {
+    "asset_id": "JN-110-063",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.6614,
+      "lon": 116.9339,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2020,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 2,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "位于市区边缘，雷电活动较为频繁"
+  },
+  {
+    "asset_id": "JN-110-064",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.6633,
+      "lon": 116.9368,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2021,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "塔基周边有养殖大棚，需注意飞行安全距离"
+  },
+  {
+    "asset_id": "JN-110-065",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.6649,
+      "lon": 116.9396,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2022,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 2,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "塔位处于风口，导线舞动历史记录较多"
+  },
+  {
+    "asset_id": "JN-110-066",
+    "line_name": "济南西郊 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.6664,
+      "lon": 116.9429,
+      "address": "济南市槐荫区—天桥区沿黄走廊"
+    },
+    "commission_year": 2012,
+    "manager": "李建国",
+    "manager_phone": "138-xxxx-1001",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "沿海高盐雾环境，金具锈蚀风险高"
+  },
+  {
     "asset_id": "JN-110-067",
     "line_name": "济南西郊 110kV 输电线路",
     "asset_type": "110kV钢管塔",
     "model": "GG1-110-18",
-    "location": {"lat": 36.6678, "lon": 116.9456, "address": "济南市天桥区北部"},
+    "location": {
+      "lat": 36.6678,
+      "lon": 116.9456,
+      "address": "济南市天桥区北部"
+    },
     "commission_year": 2018,
     "manager": "李建国",
     "manager_phone": "138-xxxx-1001",
@@ -34,7 +308,11 @@
     "line_name": "济南北环 220kV 输电线路",
     "asset_type": "220kV角钢塔",
     "model": "ZBC-220-30",
-    "location": {"lat": 36.7212, "lon": 117.0234, "address": "济南市历城区"},
+    "location": {
+      "lat": 36.7212,
+      "lon": 117.0234,
+      "address": "济南市历城区"
+    },
     "commission_year": 2012,
     "manager": "王志强",
     "manager_phone": "139-xxxx-2002",
@@ -45,11 +323,186 @@
     "remarks": "运行年限较长，绝缘子老化风险升高"
   },
   {
+    "asset_id": "JN-220-019",
+    "line_name": "济南北环 220kV 输电线路",
+    "asset_type": "220kV酒杯塔",
+    "model": "SZ1-220-27",
+    "location": {
+      "lat": 36.7221,
+      "lon": 117.0324,
+      "address": "济南市历城区北环走廊"
+    },
+    "commission_year": 2020,
+    "manager": "王海涛",
+    "manager_phone": "139-xxxx-2002",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "塔基周边有养殖大棚，需注意飞行安全距离"
+  },
+  {
+    "asset_id": "JN-220-020",
+    "line_name": "济南北环 220kV 输电线路",
+    "asset_type": "220kV角钢塔",
+    "model": "ZM2-220-30",
+    "location": {
+      "lat": 36.723,
+      "lon": 117.0413,
+      "address": "济南市历城区北环走廊"
+    },
+    "commission_year": 2021,
+    "manager": "王海涛",
+    "manager_phone": "139-xxxx-2002",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "塔位处于风口，导线舞动历史记录较多"
+  },
+  {
+    "asset_id": "JN-220-021",
+    "line_name": "济南北环 220kV 输电线路",
+    "asset_type": "220kV酒杯塔",
+    "model": "SZ1-220-27",
+    "location": {
+      "lat": 36.7243,
+      "lon": 117.0498,
+      "address": "济南市历城区北环走廊"
+    },
+    "commission_year": 2022,
+    "manager": "王海涛",
+    "manager_phone": "139-xxxx-2002",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "沿海高盐雾环境，金具锈蚀风险高"
+  },
+  {
+    "asset_id": "JN-220-022",
+    "line_name": "济南北环 220kV 输电线路",
+    "asset_type": "220kV角钢塔",
+    "model": "ZM2-220-30",
+    "location": {
+      "lat": 36.725,
+      "lon": 117.0588,
+      "address": "济南市历城区北环走廊"
+    },
+    "commission_year": 2012,
+    "manager": "王海涛",
+    "manager_phone": "139-xxxx-2002",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "靠近黄河滩区，地基沉降需重点关注"
+  },
+  {
+    "asset_id": "JN-220-023",
+    "line_name": "济南北环 220kV 输电线路",
+    "asset_type": "220kV酒杯塔",
+    "model": "SZ1-220-27",
+    "location": {
+      "lat": 36.726,
+      "lon": 117.067,
+      "address": "济南市历城区北环走廊"
+    },
+    "commission_year": 2013,
+    "manager": "王海涛",
+    "manager_phone": "139-xxxx-2002",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": ""
+  },
+  {
+    "asset_id": "JN-220-024",
+    "line_name": "济南北环 220kV 输电线路",
+    "asset_type": "220kV角钢塔",
+    "model": "ZM2-220-30",
+    "location": {
+      "lat": 36.7269,
+      "lon": 117.0756,
+      "address": "济南市历城区北环走廊"
+    },
+    "commission_year": 2014,
+    "manager": "王海涛",
+    "manager_phone": "139-xxxx-2002",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "山地塔位，人工登塔难度大，优先无人机巡视"
+  },
+  {
+    "asset_id": "JN-220-025",
+    "line_name": "济南北环 220kV 输电线路",
+    "asset_type": "220kV酒杯塔",
+    "model": "SZ1-220-27",
+    "location": {
+      "lat": 36.728,
+      "lon": 117.0839,
+      "address": "济南市历城区北环走廊"
+    },
+    "commission_year": 2015,
+    "manager": "王海涛",
+    "manager_phone": "139-xxxx-2002",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "邻近高速公路，作业需协调交通管制"
+  },
+  {
+    "asset_id": "JN-220-026",
+    "line_name": "济南北环 220kV 输电线路",
+    "asset_type": "220kV角钢塔",
+    "model": "ZM2-220-30",
+    "location": {
+      "lat": 36.729,
+      "lon": 117.093,
+      "address": "济南市历城区北环走廊"
+    },
+    "commission_year": 2016,
+    "manager": "王海涛",
+    "manager_phone": "139-xxxx-2002",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "跨越乡道，塔下有农业机械通行"
+  },
+  {
+    "asset_id": "JN-220-027",
+    "line_name": "济南北环 220kV 输电线路",
+    "asset_type": "220kV酒杯塔",
+    "model": "SZ1-220-27",
+    "location": {
+      "lat": 36.73,
+      "lon": 117.1012,
+      "address": "济南市历城区北环走廊"
+    },
+    "commission_year": 2017,
+    "manager": "王海涛",
+    "manager_phone": "139-xxxx-2002",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "位于市区边缘，雷电活动较为频繁"
+  },
+  {
     "asset_id": "QD-110-077",
     "line_name": "青岛沿海 110kV 输电线路",
     "asset_type": "110kV角钢塔",
     "model": "ZBC-110-21",
-    "location": {"lat": 36.0823, "lon": 120.3712, "address": "青岛市黄岛区"},
+    "location": {
+      "lat": 36.0823,
+      "lon": 120.3712,
+      "address": "青岛市黄岛区"
+    },
     "commission_year": 2016,
     "manager": "张海涛",
     "manager_phone": "137-xxxx-3003",
@@ -60,11 +513,319 @@
     "remarks": "高盐雾环境，防腐与污秽巡视周期缩短"
   },
   {
+    "asset_id": "QD-110-078",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.0817,
+      "lon": 120.3747,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2013,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "山地塔位，人工登塔难度大，优先无人机巡视"
+  },
+  {
+    "asset_id": "QD-110-079",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.0809,
+      "lon": 120.3778,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2014,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "邻近高速公路，作业需协调交通管制"
+  },
+  {
+    "asset_id": "QD-110-080",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.0801,
+      "lon": 120.3811,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2015,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "跨越乡道，塔下有农业机械通行"
+  },
+  {
+    "asset_id": "QD-110-081",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.0792,
+      "lon": 120.3843,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2016,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "位于市区边缘，雷电活动较为频繁"
+  },
+  {
+    "asset_id": "QD-110-082",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.0787,
+      "lon": 120.3868,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2017,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "塔基周边有养殖大棚，需注意飞行安全距离"
+  },
+  {
+    "asset_id": "QD-110-083",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.0782,
+      "lon": 120.3887,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2018,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "塔位处于风口，导线舞动历史记录较多"
+  },
+  {
+    "asset_id": "QD-110-084",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.0775,
+      "lon": 120.3908,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2019,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "沿海高盐雾环境，金具锈蚀风险高"
+  },
+  {
+    "asset_id": "QD-110-085",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.0768,
+      "lon": 120.3925,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2020,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "靠近黄河滩区，地基沉降需重点关注"
+  },
+  {
+    "asset_id": "QD-110-086",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.076,
+      "lon": 120.3946,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2021,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": ""
+  },
+  {
+    "asset_id": "QD-110-096",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.0688,
+      "lon": 120.3903,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2020,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "山地塔位，人工登塔难度大，优先无人机巡视"
+  },
+  {
+    "asset_id": "QD-110-097",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.069,
+      "lon": 120.392,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2021,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "邻近高速公路，作业需协调交通管制"
+  },
+  {
+    "asset_id": "QD-110-098",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.0698,
+      "lon": 120.3934,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2022,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "跨越乡道，塔下有农业机械通行"
+  },
+  {
+    "asset_id": "QD-110-099",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.0698,
+      "lon": 120.3947,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2012,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "位于市区边缘，雷电活动较为频繁"
+  },
+  {
+    "asset_id": "QD-110-100",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.0702,
+      "lon": 120.3965,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2013,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "塔基周边有养殖大棚，需注意飞行安全距离"
+  },
+  {
+    "asset_id": "QD-110-101",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV钢管塔",
+    "model": "GG1-110-18",
+    "location": {
+      "lat": 36.071,
+      "lon": 120.3979,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2014,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "塔位处于风口，导线舞动历史记录较多"
+  },
+  {
+    "asset_id": "QD-110-102",
+    "line_name": "青岛沿海 110kV 输电线路",
+    "asset_type": "110kV角钢塔",
+    "model": "ZBC-110-21",
+    "location": {
+      "lat": 36.0718,
+      "lon": 120.3998,
+      "address": "青岛市黄岛区沿海段"
+    },
+    "commission_year": 2015,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 110,
+    "circuit_count": 1,
+    "insulator_type": "复合绝缘子 FXBW-110/100",
+    "conductor_type": "LGJ-185/30",
+    "remarks": "沿海高盐雾环境，金具锈蚀风险高"
+  },
+  {
     "asset_id": "QD-110-103",
     "line_name": "青岛沿海 110kV 输电线路",
     "asset_type": "110kV角钢塔",
     "model": "ZBC-110-24",
-    "location": {"lat": 36.0721, "lon": 120.4012, "address": "青岛市黄岛区"},
+    "location": {
+      "lat": 36.0721,
+      "lon": 120.4012,
+      "address": "青岛市黄岛区"
+    },
     "commission_year": 2014,
     "manager": "张海涛",
     "manager_phone": "137-xxxx-3003",
@@ -79,7 +840,11 @@
     "line_name": "青岛海岸 220kV 输电线路",
     "asset_type": "220kV钢管塔",
     "model": "GG1-220-32",
-    "location": {"lat": 36.1023, "lon": 120.3456, "address": "青岛市西海岸新区"},
+    "location": {
+      "lat": 36.1023,
+      "lon": 120.3456,
+      "address": "青岛市西海岸新区"
+    },
     "commission_year": 2019,
     "manager": "张海涛",
     "manager_phone": "137-xxxx-3003",
@@ -88,5 +853,138 @@
     "insulator_type": "复合绝缘子 FXBW-220/160",
     "conductor_type": "LGJ-400/50",
     "remarks": "投运较新，主要关注金具与温升"
+  },
+  {
+    "asset_id": "QD-220-206",
+    "line_name": "青岛海岸 220kV 输电线路",
+    "asset_type": "220kV酒杯塔",
+    "model": "SZ1-220-27",
+    "location": {
+      "lat": 36.101,
+      "lon": 120.3488,
+      "address": "青岛市西海岸新区海岸段"
+    },
+    "commission_year": 2020,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "跨越乡道，塔下有农业机械通行"
+  },
+  {
+    "asset_id": "QD-220-207",
+    "line_name": "青岛海岸 220kV 输电线路",
+    "asset_type": "220kV角钢塔",
+    "model": "ZM2-220-30",
+    "location": {
+      "lat": 36.0997,
+      "lon": 120.3514,
+      "address": "青岛市西海岸新区海岸段"
+    },
+    "commission_year": 2021,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "位于市区边缘，雷电活动较为频繁"
+  },
+  {
+    "asset_id": "QD-220-208",
+    "line_name": "青岛海岸 220kV 输电线路",
+    "asset_type": "220kV酒杯塔",
+    "model": "SZ1-220-27",
+    "location": {
+      "lat": 36.098,
+      "lon": 120.3542,
+      "address": "青岛市西海岸新区海岸段"
+    },
+    "commission_year": 2022,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "塔基周边有养殖大棚，需注意飞行安全距离"
+  },
+  {
+    "asset_id": "QD-220-209",
+    "line_name": "青岛海岸 220kV 输电线路",
+    "asset_type": "220kV角钢塔",
+    "model": "ZM2-220-30",
+    "location": {
+      "lat": 36.0966,
+      "lon": 120.3575,
+      "address": "青岛市西海岸新区海岸段"
+    },
+    "commission_year": 2012,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "塔位处于风口，导线舞动历史记录较多"
+  },
+  {
+    "asset_id": "QD-220-210",
+    "line_name": "青岛海岸 220kV 输电线路",
+    "asset_type": "220kV酒杯塔",
+    "model": "SZ1-220-27",
+    "location": {
+      "lat": 36.0955,
+      "lon": 120.3606,
+      "address": "青岛市西海岸新区海岸段"
+    },
+    "commission_year": 2013,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "沿海高盐雾环境，金具锈蚀风险高"
+  },
+  {
+    "asset_id": "QD-220-211",
+    "line_name": "青岛海岸 220kV 输电线路",
+    "asset_type": "220kV角钢塔",
+    "model": "ZM2-220-30",
+    "location": {
+      "lat": 36.0943,
+      "lon": 120.3636,
+      "address": "青岛市西海岸新区海岸段"
+    },
+    "commission_year": 2014,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": "靠近黄河滩区，地基沉降需重点关注"
+  },
+  {
+    "asset_id": "QD-220-212",
+    "line_name": "青岛海岸 220kV 输电线路",
+    "asset_type": "220kV酒杯塔",
+    "model": "SZ1-220-27",
+    "location": {
+      "lat": 36.0928,
+      "lon": 120.3667,
+      "address": "青岛市西海岸新区海岸段"
+    },
+    "commission_year": 2015,
+    "manager": "孙海鹏",
+    "manager_phone": "136-xxxx-3003",
+    "voltage_kv": 220,
+    "circuit_count": 2,
+    "insulator_type": "瓷质绝缘子 XP-160",
+    "conductor_type": "LGJ-400/35",
+    "remarks": ""
   }
 ]

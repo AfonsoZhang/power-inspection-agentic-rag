@@ -1,0 +1,93 @@
+{
+  "_notice": "本文件为合成演示数据，仅用于展示飞行前合规校验的判定逻辑，不代表任何真实空域划设。真实作业必须以民航局 UOM 系统与属地管理部门发布的空域信息为准。",
+  "_reference": "字段口径参考《民用无人驾驶航空器系统空中交通管理办法》与《无人驾驶航空器飞行管理暂行条例》对管制空域、适飞空域、真高限制的一般表述。",
+  "zones": [
+    {
+      "zone_id": "NFZ-JN-001",
+      "name": "济南遥墙国际机场净空保护区（合成）",
+      "category": "airport_clearance",
+      "shape": "circle",
+      "center": {
+        "lat": 36.8572,
+        "lon": 117.216
+      },
+      "radius_km": 8.0,
+      "max_agl_m": 0,
+      "note": "机场净空保护区，未取得许可禁止任何无人驾驶航空器飞行"
+    },
+    {
+      "zone_id": "NFZ-QD-001",
+      "name": "青岛胶东国际机场净空保护区（合成）",
+      "category": "airport_clearance",
+      "shape": "circle",
+      "center": {
+        "lat": 36.3614,
+        "lon": 120.0864
+      },
+      "radius_km": 8.0,
+      "max_agl_m": 0,
+      "note": "机场净空保护区，未取得许可禁止任何无人驾驶航空器飞行"
+    },
+    {
+      "zone_id": "RST-JN-010",
+      "name": "济南北环城区人口稠密区（合成）",
+      "category": "populated_area",
+      "shape": "circle",
+      "center": {
+        "lat": 36.725,
+        "lon": 117.06
+      },
+      "radius_km": 1.8,
+      "max_agl_m": 60,
+      "note": "人口稠密区，真高不得超过 60 m，且需避开人群上方"
+    },
+    {
+      "zone_id": "RST-QD-020",
+      "name": "青岛西海岸港区限制区（合成）",
+      "category": "restricted",
+      "shape": "circle",
+      "center": {
+        "lat": 36.095,
+        "lon": 120.36
+      },
+      "radius_km": 1.5,
+      "max_agl_m": 90,
+      "note": "港区吊装作业频繁，真高限制 90 m，作业前需向港区调度报备"
+    },
+    {
+      "zone_id": "RST-QD-021",
+      "name": "青岛沿海军事管理区（合成）",
+      "category": "restricted",
+      "shape": "circle",
+      "center": {
+        "lat": 36.0705,
+        "lon": 120.3968
+      },
+      "radius_km": 0.35,
+      "max_agl_m": 0,
+      "note": "管理区范围内禁止飞行"
+    }
+  ],
+  "weather_limits": {
+    "max_wind_mps": 10.0,
+    "max_gust_mps": 12.0,
+    "min_visibility_km": 3.0,
+    "min_temperature_c": -10.0,
+    "prohibited_conditions": [
+      "雷暴",
+      "降雨",
+      "降雪",
+      "冰雹",
+      "雾",
+      "沙尘"
+    ]
+  },
+  "emi_safe_distance_m": {
+    "110": 5.0,
+    "220": 6.0,
+    "330": 7.0,
+    "500": 8.5,
+    "_note": "带电导线最小安全接近距离，取值口径参考带电作业安全距离的一般要求；无人机巡检应在此基础上再留裕度。"
+  },
+  "default_agl_m": 120.0
+}
