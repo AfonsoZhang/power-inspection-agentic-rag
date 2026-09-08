@@ -30,6 +30,7 @@ _PATH_KEYS = (
     "asset_registry",
     "inspection_history",
     "airspace_constraints",
+    "learned_policy",
     "sample_images",
 )
 

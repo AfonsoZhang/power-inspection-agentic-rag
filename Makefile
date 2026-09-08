@@ -1,4 +1,4 @@
-.PHONY: install install-dev index test lint eval-retrieval eval-kpi eval-judge app
+.PHONY: install install-dev index test lint eval-retrieval eval-policy eval-kpi eval-judge app
 
 install:            ## 安装全部运行时依赖
 	pip install -r requirements.txt
@@ -17,6 +17,9 @@ lint:
 
 eval-retrieval:     ## 检索质量评测（只需本地 embedding，无需 API Key）
 	python eval/retrieval_eval.py
+
+eval-policy:        ## 策略图自学习（纯计算，无需 API Key）；产物含可执行的最优图 JSON
+	python eval/policy_search.py
 
 eval-kpi:           ## 业务 KPI（需要 API Key）
 	python eval/business_kpi.py

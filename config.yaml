@@ -96,6 +96,7 @@ paths:
   asset_registry: ./data/assets/asset_registry.json
   inspection_history: ./data/assets/inspection_history.jsonl
   airspace_constraints: ./data/airspace/constraints.json
+  learned_policy: ./data/policies/learned_policy.json
   sample_images: ./demo/sample_images
 
 ingestion:

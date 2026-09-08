@@ -1,0 +1,74 @@
+{
+  "name": "2opt|res0|cap3|rth3|la0",
+  "notes": "由 eval/policy_search.py 在仿真中搜出（240 张候选图 × 30 次蒙特卡洛，seed=20260908，标准气象 5 m/s）。相对基线：coverage 43.5% → 44.6%，备降率 0.4% → 0.0%。",
+  "nodes": [
+    {
+      "id": "p1",
+      "skill": "sense_assets",
+      "params": {}
+    },
+    {
+      "id": "p2",
+      "skill": "sense_weather",
+      "params": {}
+    },
+    {
+      "id": "t1",
+      "skill": "collect_due_towers",
+      "params": {
+        "lookahead_days": 0.0
+      }
+    },
+    {
+      "id": "c1",
+      "skill": "screen_airspace",
+      "params": {}
+    },
+    {
+      "id": "r1",
+      "skill": "order_route_2opt",
+      "params": {}
+    },
+    {
+      "id": "s1",
+      "skill": "split_sorties",
+      "params": {
+        "battery_reserve_pct": 0.0,
+        "max_towers_per_sortie": 3.0
+      }
+    },
+    {
+      "id": "f1",
+      "skill": "fly_sorties",
+      "params": {
+        "rth_margin_min": 3.0
+      }
+    }
+  ],
+  "edges": [
+    [
+      "p1",
+      "t1"
+    ],
+    [
+      "t1",
+      "c1"
+    ],
+    [
+      "p2",
+      "c1"
+    ],
+    [
+      "c1",
+      "r1"
+    ],
+    [
+      "r1",
+      "s1"
+    ],
+    [
+      "s1",
+      "f1"
+    ]
+  ]
+}

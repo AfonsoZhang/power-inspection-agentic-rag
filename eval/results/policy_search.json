@@ -1,0 +1,252 @@
+{
+  "reference_date": "2025-10-01",
+  "line_name": "全部线路",
+  "trials": 30,
+  "evaluated": 240,
+  "improved": true,
+  "baseline": {
+    "policy_name": "baseline",
+    "trials": 30,
+    "due_towers": 34,
+    "scheduled_towers": 22,
+    "dropped_towers": 5,
+    "deferred_towers": 12,
+    "coverage": 0.43529411764705883,
+    "success_rate": 0.0,
+    "sortie_abort_rate": 0.625,
+    "mean_completed": 14.8,
+    "towers_per_hour": 6.246927286444223,
+    "p95_sortie_minutes": 20.351501631707404,
+    "mean_battery_margin_min": 9.251312078626267,
+    "incident_rate": 0.004166666666666667,
+    "signature": "sense_assets → sense_weather → collect_due_towers → screen_airspace → order_route_2opt → split_sorties → fly_sorties",
+    "notes": [
+      "5 基塔位被空域/气象筛查剔除，未计入应飞分母",
+      "12 基塔位超出单日架次能力，顺延至次日"
+    ]
+  },
+  "best": {
+    "policy_name": "2opt|res0|cap3|rth3|la0",
+    "trials": 30,
+    "due_towers": 34,
+    "scheduled_towers": 21,
+    "dropped_towers": 5,
+    "deferred_towers": 13,
+    "coverage": 0.446078431372549,
+    "success_rate": 0.0,
+    "sortie_abort_rate": 0.7041666666666667,
+    "mean_completed": 15.166666666666666,
+    "towers_per_hour": 6.306037219057586,
+    "p95_sortie_minutes": 20.779301671545536,
+    "mean_battery_margin_min": 8.981778111403507,
+    "incident_rate": 0.0,
+    "signature": "sense_assets → sense_weather → collect_due_towers(lookahead_days=0) → screen_airspace → order_route_2opt → split_sorties(battery_reserve_pct=0,max_towers_per_sortie=3) → fly_sorties(rth_margin_min=3)",
+    "notes": [
+      "5 基塔位被空域/气象筛查剔除，未计入应飞分母",
+      "13 基塔位超出单日架次能力，顺延至次日"
+    ]
+  },
+  "best_policy": {
+    "name": "2opt|res0|cap3|rth3|la0",
+    "notes": "与 mission.plan_mission 行为一致的基线：全高度作业、零额外余量、2-opt 航线",
+    "nodes": [
+      {
+        "id": "p1",
+        "skill": "sense_assets",
+        "params": {}
+      },
+      {
+        "id": "p2",
+        "skill": "sense_weather",
+        "params": {}
+      },
+      {
+        "id": "t1",
+        "skill": "collect_due_towers",
+        "params": {
+          "lookahead_days": 0.0
+        }
+      },
+      {
+        "id": "c1",
+        "skill": "screen_airspace",
+        "params": {}
+      },
+      {
+        "id": "r1",
+        "skill": "order_route_2opt",
+        "params": {}
+      },
+      {
+        "id": "s1",
+        "skill": "split_sorties",
+        "params": {
+          "battery_reserve_pct": 0.0,
+          "max_towers_per_sortie": 3.0
+        }
+      },
+      {
+        "id": "f1",
+        "skill": "fly_sorties",
+        "params": {
+          "rth_margin_min": 3.0
+        }
+      }
+    ],
+    "edges": [
+      [
+        "p1",
+        "t1"
+      ],
+      [
+        "t1",
+        "c1"
+      ],
+      [
+        "p2",
+        "c1"
+      ],
+      [
+        "c1",
+        "r1"
+      ],
+      [
+        "r1",
+        "s1"
+      ],
+      [
+        "s1",
+        "f1"
+      ]
+    ]
+  },
+  "top": [
+    {
+      "policy_name": "2opt|res0|cap3|rth3|la0",
+      "trials": 30,
+      "due_towers": 34,
+      "scheduled_towers": 21,
+      "dropped_towers": 5,
+      "deferred_towers": 13,
+      "coverage": 0.446078431372549,
+      "success_rate": 0.0,
+      "sortie_abort_rate": 0.7041666666666667,
+      "mean_completed": 15.166666666666666,
+      "towers_per_hour": 6.306037219057586,
+      "p95_sortie_minutes": 20.779301671545536,
+      "mean_battery_margin_min": 8.981778111403507,
+      "incident_rate": 0.0,
+      "signature": "sense_assets → sense_weather → collect_due_towers(lookahead_days=0) → screen_airspace → order_route_2opt → split_sorties(battery_reserve_pct=0,max_towers_per_sortie=3) → fly_sorties(rth_margin_min=3)",
+      "notes": [
+        "5 基塔位被空域/气象筛查剔除，未计入应飞分母",
+        "13 基塔位超出单日架次能力，顺延至次日"
+      ]
+    },
+    {
+      "policy_name": "2opt|res10|cap3|rth3|la7",
+      "trials": 30,
+      "due_towers": 35,
+      "scheduled_towers": 18,
+      "dropped_towers": 5,
+      "deferred_towers": 17,
+      "coverage": 0.4342857142857143,
+      "success_rate": 0.0,
+      "sortie_abort_rate": 0.3416666666666667,
+      "mean_completed": 15.2,
+      "towers_per_hour": 6.384276608732244,
+      "p95_sortie_minutes": 20.32594080355684,
+      "mean_battery_margin_min": 9.163678627640598,
+      "incident_rate": 0.0,
+      "signature": "sense_assets → sense_weather → collect_due_towers(lookahead_days=7) → screen_airspace → order_route_2opt → split_sorties(battery_reserve_pct=10,max_towers_per_sortie=3) → fly_sorties(rth_margin_min=3)",
+      "notes": [
+        "5 基塔位被空域/气象筛查剔除，未计入应飞分母",
+        "17 基塔位超出单日架次能力，顺延至次日"
+      ]
+    },
+    {
+      "policy_name": "2opt|res10|cap4|rth3|la7",
+      "trials": 30,
+      "due_towers": 35,
+      "scheduled_towers": 18,
+      "dropped_towers": 5,
+      "deferred_towers": 17,
+      "coverage": 0.40761904761904766,
+      "success_rate": 0.0,
+      "sortie_abort_rate": 0.4041666666666667,
+      "mean_completed": 14.266666666666667,
+      "towers_per_hour": 6.282701239913912,
+      "p95_sortie_minutes": 20.53620264386455,
+      "mean_battery_margin_min": 9.989156796647709,
+      "incident_rate": 0.0,
+      "signature": "sense_assets → sense_weather → collect_due_towers(lookahead_days=7) → screen_airspace → order_route_2opt → split_sorties(battery_reserve_pct=10,max_towers_per_sortie=4) → fly_sorties(rth_margin_min=3)",
+      "notes": [
+        "5 基塔位被空域/气象筛查剔除，未计入应飞分母",
+        "17 基塔位超出单日架次能力，顺延至次日"
+      ]
+    },
+    {
+      "policy_name": "2opt|res10|cap6|rth3|la7",
+      "trials": 30,
+      "due_towers": 35,
+      "scheduled_towers": 18,
+      "dropped_towers": 5,
+      "deferred_towers": 17,
+      "coverage": 0.40761904761904766,
+      "success_rate": 0.0,
+      "sortie_abort_rate": 0.4041666666666667,
+      "mean_completed": 14.266666666666667,
+      "towers_per_hour": 6.282701239913912,
+      "p95_sortie_minutes": 20.53620264386455,
+      "mean_battery_margin_min": 9.989156796647709,
+      "incident_rate": 0.0,
+      "signature": "sense_assets → sense_weather → collect_due_towers(lookahead_days=7) → screen_airspace → order_route_2opt → split_sorties(battery_reserve_pct=10,max_towers_per_sortie=6) → fly_sorties(rth_margin_min=3)",
+      "notes": [
+        "5 基塔位被空域/气象筛查剔除，未计入应飞分母",
+        "17 基塔位超出单日架次能力，顺延至次日"
+      ]
+    },
+    {
+      "policy_name": "2opt|res10|cap12|rth3|la7",
+      "trials": 30,
+      "due_towers": 35,
+      "scheduled_towers": 18,
+      "dropped_towers": 5,
+      "deferred_towers": 17,
+      "coverage": 0.40761904761904766,
+      "success_rate": 0.0,
+      "sortie_abort_rate": 0.4041666666666667,
+      "mean_completed": 14.266666666666667,
+      "towers_per_hour": 6.282701239913912,
+      "p95_sortie_minutes": 20.53620264386455,
+      "mean_battery_margin_min": 9.989156796647709,
+      "incident_rate": 0.0,
+      "signature": "sense_assets → sense_weather → collect_due_towers(lookahead_days=7) → screen_airspace → order_route_2opt → split_sorties(battery_reserve_pct=10,max_towers_per_sortie=12) → fly_sorties(rth_margin_min=3)",
+      "notes": [
+        "5 基塔位被空域/气象筛查剔除，未计入应飞分母",
+        "17 基塔位超出单日架次能力，顺延至次日"
+      ]
+    }
+  ],
+  "unsafe_rejected": 155,
+  "unsafe_best": {
+    "policy_name": "nn|res0|cap3|rth0|la7",
+    "trials": 30,
+    "due_towers": 35,
+    "scheduled_towers": 21,
+    "dropped_towers": 5,
+    "deferred_towers": 14,
+    "coverage": 0.5152380952380953,
+    "success_rate": 0.0,
+    "sortie_abort_rate": 0.36666666666666664,
+    "mean_completed": 18.033333333333335,
+    "towers_per_hour": 6.432169327619485,
+    "p95_sortie_minutes": 22.666470093141786,
+    "mean_battery_margin_min": 5.99292722290273,
+    "incident_rate": 0.075,
+    "signature": "sense_assets → sense_weather → collect_due_towers(lookahead_days=7) → screen_airspace → order_route_nn → split_sorties(battery_reserve_pct=0,max_towers_per_sortie=3) → fly_sorties(rth_margin_min=0)",
+    "notes": [
+      "5 基塔位被空域/气象筛查剔除，未计入应飞分母",
+      "14 基塔位超出单日架次能力，顺延至次日"
+    ]
+  }
+}
