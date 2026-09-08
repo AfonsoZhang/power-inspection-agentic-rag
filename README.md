@@ -1,8 +1,10 @@
 # 无人机巡检 Agentic RAG 系统
 
-> LLM 自主编排工具完成「智能问答 → 缺陷诊断 → 复飞任务规划 → 飞行前合规校验 → 报告生成」全链路。
+> LLM 自主编排工具完成「智能问答 → 缺陷诊断 → 复飞任务规划 → 飞行前合规校验 → 作业仿真 → 报告生成」全链路。
 >
-> 三种编排（手写 ReAct / LangGraph 纠错式 / 多智能体协作）跑在同一套工具上，可直接对比。
+> 三种编排（手写 ReAct / LangGraph 纠错式 / 多智能体协作）跑在同一套工具上，可直接对比；
+> 再往上有一层 **Graph-as-Policy**：作业流程被编译成可静态校验的计算图，在内置仿真里搜参数，
+> 最后固化成一份 JSON，脱离模型也能执行。
 
 [![CI](https://github.com/AfonsoZhang/power-inspection-agentic-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/AfonsoZhang/power-inspection-agentic-rag/actions/workflows/ci.yml)
 
@@ -11,12 +13,13 @@
 | 特性 | 说明 |
 |---|---|
 | **Agentic RAG** | LLM 通过 tool use 自主决定调用哪些工具、检索什么，而非固定 retrieve→generate 管线 |
-| **工具分两类** | 4 个语义检索工具 + 2 个**确定性作业工具**（复飞规划 / 合规校验）。后者不含模型调用，答案唯一且可单测 |
+| **工具分两类** | 4 个语义检索工具 + 4 个**确定性作业工具**（复飞规划 / 合规校验 / 作业仿真 / 策略自学习）。后者不含模型调用，答案唯一且可单测 |
 | **三种编排对比** | 手写 ReAct 循环 · LangGraph（router 路由 + grade 质检 + reflect 反思）· 多智能体（规划员→合规闸门→诊断员→调度员） |
 | **低空作业闭环** | 缺陷时效 → 待飞塔位 → 航线优化（最近邻 + 2-opt）→ 电池架次切分 → 空域/气象/带电体安全距离裁决 |
+| **Graph-as-Policy** | 作业流程 = 类型化计算图。模型只在编译期拼图（带"校验→打回重修"闭环），运行期按图执行；图能在蒙特卡洛仿真里被搜索、被安全判据否决，也能存成 JSON 脱机执行 |
 | **provider 中立** | 默认 DeepSeek，一行配置切到任何 OpenAI 兼容端点或 Anthropic 协议；Agent 层不出现任何 SDK 类型 |
 | **本地 Embedding** | sentence-transformers（BAAI/bge-small-zh-v1.5），检索侧零外部 API |
-| **90 个单测 + CI** | 不下模型、不联网、不需要 API Key 就能全绿 |
+| **142 个单测 + CI** | 不下模型、不联网、不需要 API Key 就能全绿 |
 
 ## 快速开始
 
@@ -74,8 +77,10 @@ vlm:
 | `lookup_asset_history` | 结构化查表 | 指定资产的巡检历史 |
 | `plan_inspection_mission` | **确定性计算** | 复飞任务规划：时效筛选 → 优先级排序 → 航线优化 → 架次切分 |
 | `check_flight_clearance` | **确定性计算** | 飞行前合规：空域限制区 / 气象限值 / 带电体安全距离 |
+| `simulate_flight_policy` | **确定性计算** | 蒙特卡洛仿真当前策略图：完成率 / 架次中断率 / 备降风险 |
+| `optimize_flight_policy` | **确定性计算** | 在仿真里搜更优的策略图，按「安全 → 完成率 → 不中断率 → 吞吐」排序 |
 
-后两个工具刻意不含模型调用。时效判定、航程与续航测算、空域限高比对都有唯一正确答案，
+后四个工具刻意不含模型调用。时效判定、航程与续航测算、空域限高比对都有唯一正确答案，
 交给模型只会引入不可控误差且无法回归；做成工具后可以断言"每个架次不超电池续航"
 "高优先级不会被航线优化排到低优先级之后"，CI 里不用 API Key 就能守住。
 模型只决定何时调用、以及如何向人解释结果。
@@ -104,6 +109,53 @@ vlm:
   `prompts.FAITHFULNESS_RUBRIC`，改判据只改一处。
 - **多智能体的价值在闸门**：能不能飞是硬约束，闸门做成确定性节点夹在两个模型角色之间，
   不让模型"觉得可以"就往下走；全员禁飞时直接跳过诊断，省一整轮调用。
+
+## Graph-as-Policy：把作业流程变成一张可校验、可仿真、可脱机执行的图
+
+思路来自 [GaP (arXiv:2607.05369)](https://arxiv.org/abs/2607.05369)——agent 把指令编译成
+带类型的技能图，在内置仿真里迭代改图，最后脱离 agent 在边缘端执行。这里做的是它的电力巡检版本。
+
+```text
+作业意图 ──▶ [compiler] ──▶ 图 JSON ──▶ validate()  ──失败──┐
+   (LLM 唯一参与的一步)          ▲                          │
+                                └────── 错误清单打回重修 ◀──┘
+                                             │ 通过
+                                             ▼
+                     ┌──────────────── MissionPolicy ────────────────┐
+                     ▼                                               ▼
+              [simulator] 蒙特卡洛推演                        [execute] 按图作业
+                     │  风况/电池健康/悬停分散/临时缺陷              （不再需要模型）
+                     ▼
+              [selflearn] 240 张候选图择优 ──▶ learned_policy.json
+```
+
+**技能库（图节点只能取自这里）**：`sense_assets` · `sense_weather` · `collect_due_towers` ·
+`screen_airspace` · `order_route_nn` / `order_route_2opt` · `split_sorties` · `fly_sorties`。
+
+**静态校验拦四类错**：技能不存在 / 参数越出取值域、端口类型对不上、图成环、
+**control 节点上游没有 `screen_airspace`**（未经合规筛查不得进入执行）。
+校验器是确定性的，所以"图合不合法"从来不由模型说了算——模型输出非法图会被带着错误清单打回重修，
+重修用尽则降级到基线图，而不是把非法的图放出去。
+
+### 自学习结果（`make eval-policy`，**不需要 API Key，任何人可复现**）
+
+240 张候选图 × 30 次蒙特卡洛，公共随机数（同一 trial、同一基塔用同一组扰动），种子固定：
+
+| 指标 | 基线图 | 最优图 |
+|---|---|---|
+| 备降/迫降率 | 0.4% | **0.0%** |
+| 完成率 coverage | 43.5% | **44.6%** |
+| 吞吐（基/飞行小时） | 6.25 | **6.31** |
+| 平均完成塔位 | 14.8 | **15.2** |
+
+**最有信息量的不是这张表，而是被否决的那张图**：`nn|res0|cap3|rth0|la7` 的 coverage 达到
+51.5%，比最优图高 6.9 个百分点——但它的备降/迫降率是 7.5%。排序把安全放在第一位且不可交换，
+所以它连同另外 154 张图一起被否决。只按吞吐挑图，挑中的就是它。
+
+> **仿真是什么**：作业时序与续航的随机模型（四个随机源：风况、电池健康、悬停时长分散、
+> 临时发现缺陷），**不是**飞行动力学仿真。系数是工程假设值而非实测标定，且转场只统计架次内
+> 塔间航段（起降点往返未建模），所以绝对数字没有外部效度，只能用于策略之间的横向比较。
+> 完整口径写在 [`src/policy/simulator.py`](src/policy/simulator.py) 顶部。
 
 ## 评测
 
@@ -135,17 +187,23 @@ k 从 6 提到 8 指标不变 → 瓶颈不在召回条数，而在切分粒度�
 ## 目录结构
 
 ```text
-├── app/streamlit_app.py       # Streamlit Demo（8 Tab）
+├── app/streamlit_app.py       # Streamlit Demo（9 Tab）
 ├── src/
 │   ├── agent/
 │   │   ├── agent.py           # 手写 ReAct 循环
 │   │   ├── graph.py           # LangGraph 纠错式编排
 │   │   ├── crew.py            # 多智能体协作链
-│   │   └── tools.py           # 6 个工具的中立 schema + 执行分发
+│   │   └── tools.py           # 8 个工具的中立 schema + 执行分发
 │   ├── mission/               # 低空作业（确定性）
 │   │   ├── geo.py             #   haversine + 最近邻 + 2-opt
 │   │   ├── planner.py         #   缺陷闭环判定 → 时效 → 航线 → 架次
 │   │   └── airspace.py        #   空域 / 气象 / 带电体安全距离
+│   ├── policy/                # Graph-as-Policy（确定性）
+│   │   ├── skills.py          #   技能库：类型签名 + 参数取值域
+│   │   ├── policy_graph.py    #   图结构 / 静态校验 / 序列化 / 执行
+│   │   ├── compiler.py        #   LLM 编译作业意图 → 图（含重修闭环）
+│   │   ├── simulator.py       #   蒙特卡洛作业仿真
+│   │   └── selflearn.py       #   候选图搜索与择优
 │   ├── generation/
 │   │   ├── llm_types.py       # provider 中立的消息与工具调用结构
 │   │   ├── providers.py       # Anthropic / OpenAI 协议双向翻译（纯函数）
@@ -161,9 +219,10 @@ k 从 6 提到 8 指标不变 → 瓶颈不在召回条数，而在切分粒度�
 │   ├── regulations/           # 行业规程（3 份 Markdown → 49 chunks）
 │   ├── defects_history/       # 历史缺陷案例（12 条）
 │   ├── assets/                # 52 基杆塔档案 + 75 条巡检历史
-│   └── airspace/              # 空域限制区 / 气象限值 / 安全距离
-├── eval/                      # 检索评测（免 Key）+ 业务 KPI + LLM-as-Judge
-├── tests/                     # 90 个单测
+│   ├── airspace/              # 空域限制区 / 气象限值 / 安全距离
+│   └── policies/              # 自学习固化的策略图（可脱机执行）
+├── eval/                      # 检索评测 + 策略自学习（均免 Key）+ 业务 KPI + LLM-as-Judge
+├── tests/                     # 142 个单测
 ├── docs/                      # 架构说明 / PRD / ROI
 └── config.yaml
 ```
@@ -173,7 +232,7 @@ k 从 6 提到 8 指标不变 → 瓶颈不在召回条数，而在切分粒度�
 | 维度 | 基础 RAG | Agentic RAG（本项目） |
 |---|---|---|
 | 检索策略 | 固定管线，每次都检索 | LLM 自主判断是否需要检索、检索什么 |
-| 工具编排 | 无 | 6 个工具，含确定性作业计算 |
+| 工具编排 | 无 | 8 个工具，含确定性作业计算与仿真 |
 | 多轮推理 | 单轮 | 可换关键词再搜；LangGraph 版还有质检-反思重试 |
 | 多模态 | 不支持 | VLM 看图 + Agent 检索协同（需配置 vlm） |
 | 可解释性 | 仅返回答案 | 展示路由 / 思考 / 工具调用 / 质检 / 反思全过程 |
