@@ -38,6 +38,9 @@ from src.ingestion.text_loader import (
 )
 from src.mission.airspace import check_flight, format_report
 from src.mission.planner import format_plan, plan_mission
+from src.policy.policy_graph import active_policy, default_policy
+from src.policy.selflearn import format_learning, search
+from src.policy.simulator import format_sim, simulate
 
 st.set_page_config(page_title="无人机巡检 Agentic RAG", page_icon=":mag:", layout="wide")
 
@@ -302,6 +305,58 @@ def tab_mission():
                 st.markdown(format_report(report))
 
 
+def tab_policy():
+    st.header("策略图仿真与自学习（Graph-as-Policy）")
+    st.caption(
+        "把作业流程写成一张类型化的计算图：图能被静态校验（类型对不上、成环、control 节点上游"
+        "缺合规筛查都会被拒），能在内置仿真里反复试跑，也能存成 JSON 交给没有模型的执行器直接跑。"
+        "模型只在编译期把作业意图拼成图，运行期不参与。"
+    )
+
+    policy = active_policy()
+    is_learned = policy.name != default_policy().name
+    st.markdown(f"**当前在用的图**（{'自学习产物' if is_learned else '基线'}）：`{policy.signature()}`")
+    if policy.notes:
+        st.caption(policy.notes)
+
+    c1, c2, c3 = st.columns([2, 1, 1])
+    with c1:
+        line = st.selectbox("线路", ["全部线路"] + _line_names(), key="policy_line")
+    with c2:
+        ref = st.date_input("参考日期", value=date(2025, 10, 1), key="policy_date")
+    with c3:
+        trials = st.number_input("蒙特卡洛次数", 5, 200, 30, 5, key="policy_trials")
+
+    weather = _weather_inputs("policy")
+    line_arg = None if line == "全部线路" else line
+
+    left, right = st.columns(2)
+    with left:
+        run_sim = st.button("仿真当前图", type="primary", key="policy_sim")
+    with right:
+        run_search = st.button("搜索更优的图", key="policy_search")
+
+    if run_sim:
+        report = simulate(policy, ref.isoformat(), line_arg, weather, trials=int(trials))
+        m = st.columns(4)
+        m[0].metric("完成率", f"{report.coverage:.1%}")
+        m[1].metric("架次中断率", f"{report.sortie_abort_rate:.1%}")
+        m[2].metric("备降/迫降率", f"{report.incident_rate:.1%}")
+        m[3].metric("吞吐 基/飞行小时", f"{report.towers_per_hour:.2f}")
+        st.markdown(format_sim(report))
+
+    if run_search:
+        with st.spinner("在仿真里试跑候选图……"):
+            result = search(ref.isoformat(), line_arg, weather, trials=int(trials))
+        st.markdown(format_learning(result))
+        st.download_button(
+            "下载最优图 JSON（可直接放到 data/policies/learned_policy.json）",
+            data=json.dumps(result.best_policy.to_dict(), ensure_ascii=False, indent=2),
+            file_name="learned_policy.json",
+            mime="application/json",
+        )
+
+
 def tab_crew():
     st.header("多智能体协作（规划员 → 合规闸门 → 诊断员 → 调度员）")
     st.caption(
@@ -429,9 +484,9 @@ def main():
     st.caption("Agent 自主推理 + 多工具协同 + 确定性作业计算 + 引用溯源")
 
     names = ["智能问答（Agent）", "缺陷诊断（Agent）", "LangGraph Agent", "低空作业台",
-             "多智能体协作", "巡检报告", "基础RAG对比", "系统信息"]
+             "策略图仿真", "多智能体协作", "巡检报告", "基础RAG对比", "系统信息"]
     fns = [tab_agent_qa, tab_agent_diagnose, tab_langgraph_qa, tab_mission,
-           tab_crew, tab_report, tab_basic_qa, tab_system]
+           tab_policy, tab_crew, tab_report, tab_basic_qa, tab_system]
     for tab, fn in zip(st.tabs(names), fns, strict=True):
         with tab:
             fn()
