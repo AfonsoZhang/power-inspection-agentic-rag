@@ -249,8 +249,13 @@ k 从 6 提到 8 指标不变 → 瓶颈不在召回条数，而在切分粒度�
 
 ## 文档
 
-- [技术架构与设计决策](docs/architecture.md)
-- [PRD v1](docs/PRD_v1.md) · [v1.1 迭代记录](docs/PRD_v2_iteration.md) · [用户访谈](docs/user_interviews.md) · [ROI 测算](docs/ROI_one_pager.md)
+- [技术架构与设计决策](docs/architecture.md) —— 对应本仓库的真实实现
+- 产品文档演练：[PRD v1](docs/PRD_v1.md) · [v1.1 迭代记录](docs/PRD_v2_iteration.md) · [用户访谈](docs/user_interviews.md) · [ROI 测算](docs/ROI_one_pager.md)
+
+> 后四份是产品侧的思考演练：访谈对象为**虚拟用户角色**，指标为**设计目标与验收阈值**，
+> ROI 为基于公开价格与行业耗时假设的**测算**，系统未上线、无灰度数据。
+> 本仓库**已实测**的数字只有两项，都免 API Key 可复现，结果提交在 [`eval/results/`](eval/results/)：
+> 检索质量（Recall@6 0.911）与策略图自学习（240 张候选图择优）。
 
 ## License
 
