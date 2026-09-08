@@ -81,6 +81,15 @@ mission:
     III: 30
   routine_interval_days: 90   # 无缺陷杆塔的例行巡检间隔
 
+# ---------------------------------------------------------------------------
+# Graph-as-Policy：作业策略图的仿真与自学习
+# 仿真的随机模型系数写在 src/policy/simulator.py 顶部（工程假设值，非实测标定），
+# 不放这里是为了避免"改个 yaml 就悄悄换了评测口径"。
+# ---------------------------------------------------------------------------
+policy:
+  simulation_trials: 30       # 单张图的蒙特卡洛次数
+  random_seed: 20260908       # 固定种子，保证结果可复现
+
 paths:
   regulations_dir: ./data/regulations
   defect_cases: ./data/defects_history/cases.jsonl
