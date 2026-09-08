@@ -52,12 +52,13 @@ def test_clearance_tool_without_assets_explains_itself():
 
 
 def test_deterministic_tools_run_without_any_api_key():
-    """规划与合规两个工具是纯计算，没有 API Key 也必须能跑——CI 正是这么跑的。"""
-    plan = execute_tool("plan_inspection_mission",
-                        {"line_name": "济南西郊 110kV 输电线路", "reference_date": "2025-10-01"})
-    assert "巡检任务计划" in plan
-    clearance = execute_tool("check_flight_clearance", {"asset_ids": ["JN-110-052"], "agl_m": 120})
-    assert "飞行前合规校验" in clearance
+    """规划/合规/仿真/自学习四个工具都是纯计算，没有 API Key 也必须能跑——CI 正是这么跑的。"""
+    line = {"line_name": "济南西郊 110kV 输电线路", "reference_date": "2025-10-01"}
+    assert "巡检任务计划" in execute_tool("plan_inspection_mission", line)
+    assert "飞行前合规校验" in execute_tool(
+        "check_flight_clearance", {"asset_ids": ["JN-110-052"], "agl_m": 120})
+    assert "策略仿真结果" in execute_tool("simulate_flight_policy", {**line, "trials": 3})
+    assert "策略自学习结果" in execute_tool("optimize_flight_policy", {**line, "trials": 3})
 
 
 def test_lookup_asset_returns_json_for_known_and_message_for_unknown():

@@ -8,6 +8,9 @@
   面向"算出来的答案"——时效判定、航程与续航测算、空域限高比对，全部是可验证计算。
   把它们做成工具而不是写进提示词让模型推，是为了让这部分**零幻觉且可单测**；
   模型只决定何时调用、以及如何向人解释结果。
+- **策略评估类**（simulate_flight_policy / optimize_flight_policy）
+  面向"这么排靠不靠谱"——把作业策略图丢进内置仿真做蒙特卡洛推演，或在仿真里搜更优的图。
+  同样零模型参与，见 src/policy/。
 
 工具 schema 用中立格式 {name, description, parameters}，由 providers.py 翻译成
 Anthropic 的 input_schema 或 OpenAI 的 function.parameters。
@@ -132,9 +135,55 @@ TOOL_DEFINITIONS = [
             "required": ["asset_ids"],
         },
     },
+    {
+        "name": "simulate_flight_policy",
+        "description": (
+            "对当前作业策略图做蒙特卡洛仿真，评估这份排班在风况、电池健康、悬停时长分散、"
+            "临时发现缺陷四种扰动下的完成率、架次中断率与备降风险。"
+            "用户问「这么排靠谱吗 / 风大了还飞得完吗 / 会不会飞一半电量不够」时调用。"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "line_name": {"type": "string", "description": "线路名称，留空表示全部线路"},
+                "reference_date": {"type": "string", "description": "计划参考日期 YYYY-MM-DD，缺省为今天"},
+                "weather": {
+                    "type": "object",
+                    "description": "气象实况，字段同 check_flight_clearance；缺省按 5 m/s 晴天推演",
+                },
+                "trials": {"type": "integer", "description": "蒙特卡洛次数，缺省 30"},
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "optimize_flight_policy",
+        "description": (
+            "在仿真中搜索更优的作业策略图：遍历航线算法、电池安全余量、单架次塔位上限、"
+            "返航阈值等组合，按「安全 → 完成率 → 不中断率 → 吞吐」挑出最优图，并给出与基线的对照。"
+            "用户问「怎么排能多飞几基 / 参数该怎么调 / 有没有更稳的排法」时调用。"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "line_name": {"type": "string", "description": "线路名称，留空表示全部线路"},
+                "reference_date": {"type": "string", "description": "计划参考日期 YYYY-MM-DD，缺省为今天"},
+                "weather": {"type": "object", "description": "气象实况；缺省按 5 m/s 晴天推演"},
+                "trials": {"type": "integer", "description": "单张候选图的蒙特卡洛次数，缺省 24"},
+            },
+            "required": [],
+        },
+    },
 ]
 
 TOOL_NAMES = [t["name"] for t in TOOL_DEFINITIONS]
+
+# 仿真的默认气象：晴、5 m/s。写死默认值是为了让两次调用的结果可比——
+# 用户没给天气时不能随机取一个，否则"改进了没有"这个问题没法回答。
+DEFAULT_SIM_WEATHER = {
+    "condition": "晴", "wind_mps": 5.0, "gust_mps": 7.0,
+    "visibility_km": 10.0, "temperature_c": 15.0,
+}
 
 
 def execute_tool(name: str, args: dict) -> str:
@@ -196,6 +245,28 @@ def _dispatch(name: str, args: dict) -> str:
             weather=args.get("weather"),
         )
         return format_report(report)
+
+    if name == "simulate_flight_policy":
+        from ..policy.policy_graph import active_policy
+        from ..policy.simulator import format_sim, simulate
+
+        return format_sim(simulate(
+            active_policy(),
+            args.get("reference_date") or date.today().isoformat(),
+            args.get("line_name") or None,
+            args.get("weather") or DEFAULT_SIM_WEATHER,
+            trials=int(args.get("trials") or 30),
+        ))
+
+    if name == "optimize_flight_policy":
+        from ..policy.selflearn import format_learning, search
+
+        return format_learning(search(
+            args.get("reference_date") or date.today().isoformat(),
+            args.get("line_name") or None,
+            args.get("weather") or DEFAULT_SIM_WEATHER,
+            trials=int(args.get("trials") or 24),
+        ))
 
     return f"未知工具: {name}"
 
